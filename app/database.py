@@ -10,6 +10,9 @@ engine = create_engine(DATABASE_URL, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+# Supprimer et recréer les tables
+Base.metadata.drop_all(engine)
+Base.metadata.create_all(engine)
 # Supprimer toutes les données des tables (dans l'ordre des dépendances)
 session.query(Event).delete()
 session.query(Contract).delete()
@@ -23,18 +26,20 @@ Base.metadata.create_all(engine)
 
 # Ajouter un commercial (Sales)
 sales_user = Sales(first_name="Alice", last_name="Dupont", email="alice.dupont@email.com", role="sales")
+sales_user.set_password("password123")
 
 # Ajouter un membre support
 support_user = Support(first_name="Bob", last_name="Martin", email="bob.martin@email.com", role="support")
+support_user.set_password("password123")
 
 # Ajouter un administrateur
 admin_user = Admin(
-    first_name="Clara",
-    last_name="Bertrand",
-    email="clara.bertrand@email.com",
+    first_name="Bernadette",
+    last_name="Pougnat",
+    email="berna.pougnat@email.com",
     role="admin",
 )
-
+admin_user.set_password("password123")
 # Insérer dans la base
 session.add_all([sales_user, support_user, admin_user])
 session.commit()
@@ -42,10 +47,10 @@ session.commit()
 print(f"Sales ID: {sales_user.id}, Support ID: {support_user.id}, Admin ID: {admin_user.id}")
 
 new_customer = Customer(
-    name="Kevin Casey",
-    email="kevin@startup.io",
-    phone="+678 123 456 78",
-    enterprise="Cool Startup LLC",
+    name="Marie Vernard",
+    email="mariv@startup.io",
+    phone="+6 22336655",
+    enterprise="Super Startup LLC",
     sales_contact=sales_user.id,
 )
 
@@ -57,7 +62,7 @@ print(f"Customer ajouté avec ID {new_customer.id}")
 new_contract = Contract(
     customer_id=new_customer.id,
     sales_contact=sales_user.id,
-    total_amount=5000,
+    total_amount=11000,
     due_amount=2000,
     status="signed",
 )
@@ -68,15 +73,15 @@ session.commit()
 print(f"Contrat ajouté avec ID {new_contract.id}")
 
 new_event = Event(
-    name="Réunion Stratégique",
+    name="Fête du vin",
     contract_id=new_contract.id,
     customer_id=new_customer.id,
-    start_date="2024-03-01 14:30:00",
-    end_date="2024-03-01 18:00:00",
+    start_date="2025-03-01 14:30:00",
+    end_date="2025-03-01 18:00:00",
     support_contact=support_user.id,  # Associe cet événement à Bob du Support
-    location="Paris, France",
-    attendees=20,
-    notes="Présentation des nouveaux objectifs.",
+    location="Marseille, France",
+    attendees=30,
+    notes="Prévoir au moins 10 tonneaux.",
 )
 
 session.add(new_event)

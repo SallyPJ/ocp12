@@ -12,6 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from passlib.hash import argon2
 
 Base = declarative_base()
 
@@ -30,12 +31,21 @@ class User(Base):
     first_name = Column(String(150), nullable=False)
     last_name = Column(String(150), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
-    role = Column(String(50))  # Type de l'utilisateur (sales, support, admin)
+    role = Column(String(50)) #User type
+    password = Column(String(255),nullable=False)
 
     __mapper_args__ = {
         "polymorphic_identity": "user",
         "polymorphic_on": role,  # Détermine le type de sous-classe
     }
+
+    def set_password(self, password):
+        """Hache le mot de passe avec Argon2 et le stocke."""
+        self.password = argon2.hash(password)
+
+    def check_password(self, password):
+        """Vérifie si un mot de passe correspond au hash stocké."""
+        return argon2.verify(password, self.password)
 
 
 class Sales(User):
