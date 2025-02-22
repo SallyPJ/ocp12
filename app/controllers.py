@@ -1,6 +1,8 @@
 from dao import UserDAO
 from db.transaction_manager import TransactionManager
 from models import User
+from services.token_services import require_auth
+
 
 class UserController:
     """Manages user-related operations and business logic."""
@@ -10,6 +12,7 @@ class UserController:
         self.session = session  # ✅ Store session in the controller
         self.user_dao = UserDAO(self.session)  # ✅ Pass session to DAO
 
+    @require_auth
     def create_user(self, first_name, last_name, email, password, department_id):
         """Creates a new user and ensures transaction integrity."""
         with TransactionManager() as session:  # ✅ Use TransactionManager

@@ -1,10 +1,12 @@
-from sqlalchemy.orm import Session
+from db.transaction_manager import TransactionManager
 from models import Department,User
+from sqlalchemy.orm import Session
 
 class DepartmentDAO:
     """Gestion des accès aux départements."""
 
     def __init__(self, session: Session):
+        """Receives an active session from the caller (no more get_session())."""
         self.session = session
 
     def get_by_name(self, name):
@@ -37,6 +39,7 @@ class UserDAO:
     """Data Access Object for user management."""
 
     def __init__(self, session: Session):
+        """Receives an active session from the caller (no more get_session())."""
         self.session = session
 
     def get_by_email(self, email):

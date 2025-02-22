@@ -18,13 +18,34 @@ def login():
     password = click.prompt("Enter your password", hide_input=True)
 
     with TransactionManager() as session:
-        token = authenticate_user(session, email, password)
+        access_token, refresh_token = authenticate_user(session, email, password)
 
-        if token:
-            save_token(token)
+        if access_token:
+            save_token(access_token)
             click.echo(click.style("✅ Login successful. Token saved.", fg="green"))
         else:
             click.echo(click.style("❌ Login failed.", fg="red"))
+
+@click.command()
+def check_auth():
+    """Checks if the user is authenticated and refreshes the token if needed."""
+    access_token, refresh_token = load_tokens()
+
+    if not access_token or not refresh_token:
+        click.echo(click.style("❌ No tokens found. Please login.", fg="red"))
+        return
+
+    payload = verify_token(access_token)
+
+    if payload is None:  # Token expired, try refreshing
+        access_token = refresh_access_token(refresh_token)
+        if access_token:
+            save_tokens(access_token, refresh_token)  # Save the new access token
+        else:
+            click.echo(click.style("❌ Could not refresh token. Please login again.", fg="red"))
+            return
+
+    click.echo(click.style("✅ You are authenticated.", fg="green"))
 
 @click.command()
 def setup():

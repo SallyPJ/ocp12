@@ -8,6 +8,7 @@ sqlalchemy = "*"
 black = "*"
 click = "*"
 pyjwt = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
