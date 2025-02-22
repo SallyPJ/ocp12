@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 sqlalchemy = "*"
 black = "*"
+click = "*"
+pyjwt = "*"
 
 [dev-packages]
 
