@@ -9,12 +9,21 @@ from sqlalchemy import (
     TIMESTAMP,
     DateTime,
     func,
+    Table
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from passlib.hash import argon2
 
 Base = declarative_base()
+
+#Association table for many-to-many relationship between departements and permissions
+department_permissions = Table(
+    "department_permissions",
+    Base.metadata,
+    Column("department_id", Integer, ForeignKey("department.id"), primary_key=True),
+    Column("permission_id", Integer, ForeignKey("permissions.id"), primary_key=True),
+)
 
 
 class User(Base):
@@ -25,19 +34,14 @@ class User(Base):
         primary_key=True,
         autoincrement=True,
         index=True,
-        nullable=True,
-        unique=True,
     )
     first_name = Column(String(150), nullable=False)
     last_name = Column(String(150), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
-    role = Column(String(50)) #User type
+    department_id = Column(Integer, ForeignKey('department.id'), nullable=False)
+    department = relationship("Department")
     password = Column(String(255),nullable=False)
 
-    __mapper_args__ = {
-        "polymorphic_identity": "user",
-        "polymorphic_on": role,  # Détermine le type de sous-classe
-    }
 
     def set_password(self, password):
         """Hache le mot de passe avec Argon2 et le stocke."""
@@ -47,18 +51,27 @@ class User(Base):
         """Vérifie si un mot de passe correspond au hash stocké."""
         return argon2.verify(password, self.password)
 
+class Department(Base):
+    __tablename__ = 'department'
 
-class Sales(User):
-    __mapper_args__ = {"polymorphic_identity": "sales"}
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+    name = Column(String(30), unique=True, nullable=False)
+    permissions = relationship("Permission", secondary=department_permissions, backref="departments")
 
+class Permission(Base):
+    __tablename__ = "permissions"
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+    name = Column(String(255), unique=True,  nullable=False)
 
-class Support(User):
-    __mapper_args__ = {"polymorphic_identity": "support"}
-
-
-class Admin(User):
-    __mapper_args__ = {"polymorphic_identity": "admin"}
-
+# Enumération des permissions
 
 class Customer(Base):
     __tablename__ = "customer"
@@ -68,8 +81,6 @@ class Customer(Base):
         primary_key=True,
         autoincrement=True,
         index=True,
-        nullable=True,
-        unique=True,
     )
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False)
@@ -91,8 +102,6 @@ class Contract(Base):
         primary_key=True,
         autoincrement=True,
         index=True,
-        nullable=True,
-        unique=True,
     )
     customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
     sales_contact = Column(Integer, ForeignKey("user.id"), nullable=False)  # Doit être un commercial
@@ -113,8 +122,6 @@ class Event(Base):
         primary_key=True,
         autoincrement=True,
         index=True,
-        nullable=True,
-        unique=True,
     )
     name = Column(String(255), nullable=False)
     contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False)
