@@ -1,8 +1,11 @@
 from sqlalchemy.orm import Session
-from models import Department
+from models import Department, User
 from models import Permission
 from models import department_permissions
 from services.constants import DEPARTMENTS, PERMISSIONS, DEPARTMENT_PERMISSIONS
+from passlib.hash import argon2
+from controllers import UserController
+from services.token_services import save_tokens
 
 
 def seed_permissions(session: Session):
@@ -59,3 +62,60 @@ def seed_department_permissions(session: Session):
 
     session.commit()
     print("✅ Department permissions seeded ")
+
+def ensure_admin_exists(session: Session):
+    """Vérifie s'il existe au moins un administrateur, sinon en crée un."""
+    # ✅ Vérifier si au moins un administrateur est présent
+    admin_count = session.query(User).join(Department).filter(Department.name == "Admin").count()
+
+    if admin_count == 0:
+        print("🚨 Aucun administrateur trouvé ! Création d'un Super Admin...")
+
+        # ✅ Vérifier si le département Admin existe, sinon le créer
+        admin_department = session.query(Department).filter_by(name="Admin").first()
+        if not admin_department:
+            admin_department = Department(name="Admin")
+            session.add(admin_department)
+            session.commit()
+
+        # ✅ Création d'un Super Admin par défaut
+        super_admin = User(
+            first_name="Admin",
+            last_name="EpicEvents",
+            email="admin@epicevents.com",
+            department_id=admin_department.id,
+            password=argon2.hash("AdminPass123!")  # ✅ Mot de passe sécurisé
+        )
+
+        session.add(super_admin)
+        session.commit()
+        print("✅ Super Admin créé avec succès.")
+    else:
+        print("✅ Un administrateur est déjà présent.")
+
+
+def populate_db(session: Session):
+    """Ajoute les utilisateurs à la base avec les bons départements."""
+
+    # ✅ Récupérer les départements
+    sales_department = session.query(Department).filter_by(name="Sales").first()
+    management_department = session.query(Department).filter_by(name="Management").first()
+    support_department = session.query(Department).filter_by(name="Support").first()
+
+    # ✅ Vérifier que les départements existent bien
+    if not sales_department or not management_department or not support_department:
+        print("❌ Erreur: Les départements ne sont pas créés.")
+        return
+
+    # ✅ Instancier le contrôleur utilisateur
+    user_controller = UserController(session)
+
+    # ✅ Ajouter des utilisateurs
+    user_controller.create_user("Alice", "Dupont", "alice.sales@epicevents.com", "SalesPass123!", sales_department.id)
+    user_controller.create_user("Bob", "Martin", "bob.sales@epicevents.com", "SalesPass123!", sales_department.id)
+    user_controller.create_user("Carla", "Durand", "carla.management@epicevents.com", "MgmtPass123!",
+                                management_department.id)
+    user_controller.create_user("David", "Bernard", "david.support@epicevents.com", "SupportPass123!",
+                                support_department.id)
+
+    print("✅ Base de données peuplée avec succès.")

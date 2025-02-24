@@ -1,5 +1,5 @@
-from db.transaction_manager import TransactionManager
-from models import Department,User
+from database.transaction_manager import TransactionManager
+from models import Department,User, Customer, Contract, Event
 from sqlalchemy.orm import Session
 
 class DepartmentDAO:
@@ -56,3 +56,47 @@ class UserDAO:
         """Deletes a user from the database."""
         self.session.delete(user)
         self.session.commit()
+
+
+
+class CustomerDAO:
+    """Handles database operations for Clients."""
+
+    def __init__(self, session: Session):
+        self.session = session
+
+    def get_all_customers(self):
+        """Retrieve all clients from the database."""
+        return self.session.query(Customer).all()
+
+    def save_customer(self, name, email, phone, enterprise):
+        """Ajoute un client en base de données."""
+        new_customer = Customer(
+            name=name,
+            email=email,
+            phone=phone,
+            enterprise=enterprise
+        )
+        self.session.add(new_customer)
+        self.session.commit()
+        return new_customer
+
+class ContractDAO:
+    """Handles database operations for Contracts."""
+
+    def __init__(self, session: Session):
+        self.session = session
+
+    def get_all_contracts(self):
+        """Retrieve all contracts from the database."""
+        return self.session.query(Contract).all()
+
+class EventDAO:
+    """Handles database operations for Events."""
+
+    def __init__(self, session: Session):
+        self.session = session
+
+    def get_all_events(self):
+        """Retrieve all events from the database."""
+        return self.session.query(Event).all()

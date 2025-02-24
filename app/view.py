@@ -1,55 +1,58 @@
-from dao.user_dao import UserDAO
-from sqlalchemy.orm import sessionmaker
-from config import engine
-from models.user import User
+import click
+from database.transaction_manager import TransactionManager
+from controllers.user_controller import UserController
 
+@click.group()
+def cli():
+    """Interface CLI pour gérer les utilisateurs du CRM."""
+    pass
 
-Session = sessionmaker(bind=engine)
+@click.command()
+@click.argument("first_name")
+@click.argument("last_name")
+@click.argument("email")
+@click.argument("password")
+@click.argument("department_id", type=int)
+def create_user(first_name, last_name, email, password, department_id):
+    """Créer un nouvel utilisateur."""
+    with TransactionManager() as session:
+        user_controller = UserController(session)
+        message = user_controller.create_user(first_name, last_name, email, password, department_id)
+        click.echo(message)
 
-class UserController:
-    """Handles user-related operations and business logic."""
+@click.command()
+@click.argument("user_id", type=int)
+@click.option("--first_name", help="Nouveau prénom")
+@click.option("--last_name", help="Nouveau nom")
+@click.option("--email", help="Nouvel email")
+@click.option("--password", help="Nouveau mot de passe")
+@click.option("--department_id", type=int, help="Nouvelle ID de département")
+def update_user(user_id, first_name, last_name, email, password, department_id):
+    """Mettre à jour un utilisateur existant."""
+    with TransactionManager() as session:
+        user_controller = UserController(session)
+        message = user_controller.update_user(user_id, first_name=first_name, last_name=last_name, email=email, password=password, department_id=department_id)
+        click.echo(message)
 
-    def __init__(self):
-        self.session = Session()
-        self.user_dao = UserDAO(self.session)
+@click.command()
+@click.argument("user_id", type=int)
+def delete_user(user_id):
+    """Supprimer un utilisateur."""
+    with TransactionManager() as session:
+        user_controller = UserController(session)
+        message = user_controller.delete_user(user_id)
+        click.echo(message)
 
-    def create_user(self, first_name, last_name, email, password, department_id):
-        """Creates a new user with a hashed password."""
-        if self.user_dao.get_by_email(email):
-            return "❌ A user with this email already exists."
+@click.command()
+def list_users():
+    """Afficher la liste de tous les utilisateurs."""
+    with TransactionManager() as session:
+        user_controller = UserController(session)
+        users = user_controller.list_users()
+        for user in users:
+            click.echo(user)
 
-        user = User(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            department_id=department_id
-        )
-        user.set_password(password)  # ✅ Hashing the password before storing
-
-        self.user_dao.save(user)
-        return f"✅ User {user.email} created successfully."
-
-    def get_user_info(self, email):
-        """Retrieves user details."""
-        user = self.user_dao.get_by_email(email)
-        if not user:
-            return "❌ User not found."
-
-        return f"👤 {user.first_name} {user.last_name} | Email: {user.email} | Department: {user.department.name}"
-
-    def delete_user(self, email):
-        """Deletes a user from the system."""
-        user = self.user_dao.get_by_email(email)
-        if not user:
-            return "❌ User not found."
-
-        self.user_dao.delete(user)
-        return f"✅ User {user.email} deleted successfully."
-
-    def authenticate_user(self, email, password):
-        """Authenticates a user by verifying the password."""
-        user = self.user_dao.get_by_email(email)
-        if not user or not user.check_password(password):
-            return "❌ Incorrect email or password."
-
-        return f"✅ Login successful! Welcome {user.first_name}."
+cli.add_command(create_user)
+cli.add_command(update_user)
+cli.add_command(delete_user)
+cli.add_command(list_users)

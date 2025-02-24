@@ -3,6 +3,7 @@ DEPARTMENTS = {
     "MANAGEMENT": {"id": 1, "name": "Management"},
     "SALES": {"id": 2, "name": "Sales"},
     "SUPPORT": {"id": 3, "name": "Support"},
+    "ADMIN": {"id": 4, "name": "Admin"},
 }
 
 # Permission IDs and Names
@@ -32,5 +33,6 @@ DEPARTMENT_PERMISSIONS = {
     "MANAGEMENT": ["MANAGE_EMPLOYEES", "CREATE_CONTRACTS", "EDIT_ALL_CONTRACTS", "FILTER_EVENTS", "ASSIGN_SUPPORT_TO_EVENT"],
     "SALES": ["CREATE_CLIENTS", "EDIT_OWN_CLIENTS", "EDIT_OWN_CONTRACTS", "FILTER_CONTRACTS", "CREATE_EVENT_FOR_CLIENT"],
     "SUPPORT": ["FILTER_OWN_EVENTS", "EDIT_OWN_EVENTS"],
+    "ADMIN": list(PERMISSIONS.keys())
 }
 
