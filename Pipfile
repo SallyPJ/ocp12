@@ -9,6 +9,8 @@ black = "*"
 click = "*"
 pyjwt = "*"
 python-dotenv = "*"
+rich = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 
