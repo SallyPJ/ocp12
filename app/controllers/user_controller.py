@@ -1,15 +1,19 @@
 from dao.user_dao import UserDAO
 from models.user import User
+from services.permissions import require_permission
+from controllers.base_controller import BaseController
 
-class UserController:
+
+class UserController (BaseController):
     """Gère les actions utilisateur sans interagir directement avec la BD."""
 
     def __init__(self, session):
-        self.user_dao = UserDAO(session)
+        super().__init__(session, UserDAO)
 
+    @require_permission("manage_employees")
     def create_user(self, first_name, last_name, email, password, department_id):
         """Créer un nouvel utilisateur avec vérifications métier."""
-        if self.user_dao.exists(email):
+        if self.dao.exists(email):
             return "❌ Un utilisateur avec cet email existe déjà."
 
         new_user = User(
@@ -20,30 +24,33 @@ class UserController:
             password=password
         )
 
-        self.user_dao.save(new_user)
+        self.dao.save(new_user)
         return f"✅ Utilisateur {new_user.email} créé avec succès."
 
+    @require_permission("manage_employees")
     def update_user(self, user_id, **kwargs):
         """Met à jour les informations d'un utilisateur existant."""
-        user = self.user_dao.get_by_id(user_id)
+        user = self.dao.get_by_id(user_id)
         if not user:
             return "❌ Utilisateur non trouvé."
 
-        self.user_dao.update(user, **kwargs)
+        self.dao.update(user, **kwargs)
         return f"✅ Utilisateur {user.email} mis à jour avec succès."
 
+    @require_permission("manage_employees")
     def delete_user(self, user_id):
         """Supprime un utilisateur."""
-        user = self.user_dao.get_by_id(user_id)
+        user = self.dao.get_by_id(user_id)
         if not user:
             return "❌ Utilisateur non trouvé."
 
-        self.user_dao.delete(user)
+        self.dao.delete(user)
         return f"✅ Utilisateur {user.email} supprimé."
 
+    @require_permission("manage_employees")
     def list_users(self):
         """Retourne la liste des utilisateurs sous forme de texte."""
-        users = self.user_dao.get_all()
+        users = self.dao.get_all()
         if not users:
             return ["Aucun utilisateur trouvé."]
         return [f"{user.id} - {user.first_name} {user.last_name} ({user.email})" for user in users]

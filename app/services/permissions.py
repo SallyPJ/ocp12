@@ -1,45 +1,42 @@
 import functools
-from services.token_services import require_auth  # ✅ Vérifie l'authentification
-from models import Permission  # ✅ Le modèle SQLAlchemy des permissions
-from models import department_permissions  # ✅ La table d'association entre départements et permissions
+from services.auth import AuthService
+from dao.user_dao import UserDAO
 
-def require_permission(required_permission):
-    """Vérifie si l'utilisateur connecté a la permission requise."""
+
+class PermissionService:
+    """Gère l'accès aux permissions des utilisateurs."""
+
+    def __init__(self, session):
+        self.user_dao = UserDAO(session)
+        self.auth_service = AuthService(session)
+
+    def has_permission(self, user_id, permission_name):
+        """Vérifie si l'utilisateur possède une permission spécifique."""
+        user = self.user_dao.get_by_id(user_id)
+        if not user:
+            return False
+
+        user_permissions = {perm.name for perm in user.department.permissions}
+        return permission_name in user_permissions
+
+
+def require_permission(permission_name):
+    """Décorateur pour sécuriser les contrôleurs et éviter la redondance."""
+
     def decorator(func):
-        @require_auth  # ✅ Vérifie l'authentification avant la permission
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            session = kwargs.get("session")
-            if session is None:
-                # Si elle n'est pas présente, on la crée manuellement
-                from db.transaction_manager import db_session
-                session = db_session()
-                kwargs["session"] = session
+        def wrapper(self, *args, **kwargs):
+            if not hasattr(self, "user_id") or self.user_id is None:  # ✅ Vérification propre
+                print("🔴 Action refusée : Vous devez être connecté pour effectuer cette action.")
+                return
 
-            user_payload = kwargs.get("user_payload")
-            if not user_payload:
-                print("❌ Erreur: user_payload manquant.")
-                return None
+            if not self.permission_service.has_permission(self.user_id, permission_name):
+                return ["❌ Permission refusée."]
 
-            department_id = user_payload.get("department_id")
-            if not department_id:
-                print("❌ Erreur: department_id manquant dans le payload utilisateur.")
-                return None
+            return func(self, *args, **kwargs)
 
-            # ✅ Vérifie si ce département a la permission requise
-            permission_exists = (
-                session.query(Permission)
-                .join(department_permissions, department_permissions.c.permission_id == Permission.id)
-                .filter(department_permissions.c.department_id == department_id)
-                .filter(Permission.name == required_permission)
-                .first()
-            )
-
-            if not permission_exists:
-                print(f"❌ Permission refusée : Le département n'a pas '{required_permission}'.")
-                return None
-
-            return func(*args, **kwargs)
         return wrapper
+
     return decorator
+
 
