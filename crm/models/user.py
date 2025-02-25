@@ -5,6 +5,7 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
+    Boolean,
 )
 from models.base import Base
 from models.department import Department
@@ -17,16 +18,18 @@ class User(Base):
     first_name = Column(String(150), nullable=False)
     last_name = Column(String(150), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
-    department_id = Column(Integer, ForeignKey('department.id'), nullable=False)
+    department_id = Column(Integer, ForeignKey('department.id', ondelete="SET NULL"))
     department = relationship("Department")
     _password = Column("password", String(255), nullable=False)
+    active = Column(Boolean, default=True)
 
-    def __init__(self, first_name, last_name, email, department_id, password):
+    def __init__(self, first_name, last_name, email, department_id, password, active):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.department_id = department_id
         self.password = password
+        self.active = active
 
     @property
     def password(self):

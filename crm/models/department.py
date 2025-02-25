@@ -7,8 +7,8 @@ from models.permission import Permission
 department_permissions = Table(
     "department_permissions",
     Base.metadata,
-    Column("department_id", Integer, ForeignKey("department.id"), primary_key=True),
-    Column("permission_id", Integer, ForeignKey("permission.id"), primary_key=True),
+    Column("department_id", Integer, ForeignKey("department.id", ondelete="CASCADE"), primary_key=True),
+    Column("permission_id", Integer, ForeignKey("permission.id", ondelete="CASCADE"), primary_key=True),
 )
 
 class Department(Base):

@@ -24,5 +24,5 @@ class Customer(Base):
     enterprise = Column(String(255))
     creation_date = Column(TIMESTAMP, default=func.now(), nullable=False)
     last_update = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
-    sales_contact = Column(Integer, ForeignKey("user.id"), nullable=False)  # Lien avec Sales
+    sales_contact = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))  # Lien avec Sales
     sales_rep = relationship("User")  # Relation vers l'utilisateur commercial

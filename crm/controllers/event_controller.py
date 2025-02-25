@@ -11,9 +11,23 @@ class EventController(BaseController):
         super().__init__(session, EventDAO)
 
     @require_permission("read_all_events")
-    def list_events(self):
-        """Retourne la liste de tous les événements."""
-        events = self.event_dao.get_all()
+    def list_events(self, all=False, **filters):
+        """Retourne une liste d'événements filtrés par les critères fournis ou tous les événements si 'all' est True."""
+        query = self.dao.session.query(Event)
+
+        if not all:
+            # Application dynamique des filtres
+            if filters.get('no_support'):
+                query = query.filter(Event.support_contact == None)
+            if filters.get('location'):
+                query = query.filter(Event.location.ilike(f"%{filters['location']}%"))
+            if filters.get('start_date'):
+                query = query.filter(Event.start_date >= filters['start_date'])
+            if filters.get('end_date'):
+                query = query.filter(Event.end_date <= filters['end_date'])
+
+        events = query.all()
+
         if not events:
             return ["Aucun événement trouvé."]
         return [f"{e.id} - {e.name}, Lieu: {e.location}, Participants: {e.attendees}" for e in events]
@@ -44,14 +58,37 @@ class EventController(BaseController):
         self.dao.save(new_event)
         return f"✅ Événement '{name}' créé avec succès."
 
-    @require_permission("edit_own_event")
+
+
+    def can_edit_event(self, event_id):
+        """Vérifie si l'utilisateur a la permission de modifier un événement."""
+
+        if self.permission_service.has_permission(self.user_id, "edit_all_events"):
+            return True
+
+        # Vérifier si l'utilisateur a la permission d'éditer son propre événement
+        event = self.event_dao.get_by_id(event_id)
+        if event and event.support_contact == self.user_id:
+            if self.permission_service.has_permission(self.user_id, "edit_own_events"):
+                return True
+        # Si aucune condition n'est remplie, l'utilisateur n'a pas les droits
+        return False
+
+    @require_permission("edit_all_events")
     def update_event(self, event_id, **kwargs):
-        """Met à jour un événement existant."""
-        event = self.dao.get_by_id(event_id)
+        """Met à jour un événement avec vérification des permissions."""
+        if not self.can_edit_event(event_id):
+            return "❌ Vous n'avez pas la permission de modifier cet événement."
+
+        event = self.event_dao.get_by_id(event_id)
         if not event:
             return "❌ Événement non trouvé."
 
-        self.dao.update(event, **kwargs)
+        for key, value in kwargs.items():
+            if value is not None:
+                setattr(event, key, value)
+
+        self.event_dao.update(event, **kwargs)
         return f"✅ Événement {event.id} mis à jour avec succès."
 
     @require_permission("delete_event")

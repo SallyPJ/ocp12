@@ -16,7 +16,7 @@ PERMISSIONS = {
     "CREATE_CONTRACTS": {"id": 5, "name": "create_contracts"},
     "EDIT_ALL_CONTRACTS": {"id": 6, "name": "edit_all_contracts"},
     "FILTER_EVENTS": {"id": 7, "name": "filter_events"},
-    "ASSIGN_SUPPORT_TO_EVENT": {"id": 8, "name": "assign_support_to_event"},
+    "EDIT_ALL_EVENTS": {"id": 8, "name": "edit_all_events"},
 
     "CREATE_CLIENTS": {"id": 9, "name": "create_clients"},
     "EDIT_OWN_CLIENTS": {"id": 10, "name": "edit_own_clients"},
@@ -30,9 +30,9 @@ PERMISSIONS = {
 
 # ✅ Department-Permission Mapping (Now in Constants)
 DEPARTMENT_PERMISSIONS = {
-    "MANAGEMENT": ["MANAGE_EMPLOYEES", "CREATE_CONTRACTS", "EDIT_ALL_CONTRACTS", "FILTER_EVENTS", "ASSIGN_SUPPORT_TO_EVENT"],
-    "SALES": ["CREATE_CLIENTS", "EDIT_OWN_CLIENTS", "EDIT_OWN_CONTRACTS", "FILTER_CONTRACTS", "CREATE_EVENT_FOR_CLIENT"],
-    "SUPPORT": ["FILTER_OWN_EVENTS", "EDIT_OWN_EVENTS"],
+    "MANAGEMENT": ["READ_ALL_CLIENTS", "READ_ALL_CONTRACTS", "READ_ALL_EVENTS","MANAGE_EMPLOYEES", "CREATE_CONTRACTS", "EDIT_ALL_CONTRACTS", "FILTER_EVENTS", "EDIT_ALL_EVENTS"],
+    "SALES": ["READ_ALL_CLIENTS", "READ_ALL_CONTRACTS", "READ_ALL_EVENTS","CREATE_CLIENTS", "EDIT_OWN_CLIENTS", "EDIT_OWN_CONTRACTS", "FILTER_CONTRACTS", "CREATE_EVENT_FOR_CLIENT"],
+    "SUPPORT": ["READ_ALL_CLIENTS", "READ_ALL_CONTRACTS", "READ_ALL_EVENTS","FILTER_OWN_EVENTS", "EDIT_OWN_EVENTS"],
     "ADMIN": list(PERMISSIONS.keys())
 }
 

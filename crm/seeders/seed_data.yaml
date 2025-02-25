@@ -1,0 +1,225 @@
+users:
+  - first_name: "Admin"
+    last_name: "User"
+    email: "admin@example.com"
+    department_id: 4
+    password: "adminpassword"
+
+  - first_name: "Alice"
+    last_name: "Smith"
+    email: "alice.sales@example.com"
+    department_id: 2
+    password: "salespassword"
+
+  - first_name: "Bob"
+    last_name: "Jones"
+    email: "bob.sales@example.com"
+    department_id: 2
+    password: "salespassword"
+
+  - first_name: "Charlie"
+    last_name: "Brown"
+    email: "charlie.sales@example.com"
+    department_id: 2
+    password: "salespassword"
+
+  - first_name: "David"
+    last_name: "Williams"
+    email: "david.support@example.com"
+    department_id: 3
+    password: "supportpassword"
+
+  - first_name: "Eva"
+    last_name: "Johnson"
+    email: "eva.support@example.com"
+    department_id: 3
+    password: "supportpassword"
+
+  - first_name: "Frank"
+    last_name: "Lee"
+    email: "frank.support@example.com"
+    department_id: 3
+    password: "supportpassword"
+
+  - first_name: "Grace"
+    last_name: "Martinez"
+    email: "grace.management@example.com"
+    department_id: 1
+    password: "managementpassword"
+
+  - first_name: "Helen"
+    last_name: "Davis"
+    email: "helen.management@example.com"
+    department_id: 1
+    password: "managementpassword"
+
+  - first_name: "Isaac"
+    last_name: "Miller"
+    email: "isaac.management@example.com"
+    department_id: 1
+    password: "managementpassword"
+
+customers:
+  - name: "Client A"
+    email: "clientA@example.com"
+    phone: "+33612345678"
+    enterprise: "Entreprise A"
+    sales_contact: 2  # Refers to the 'sales' user (ID = 2)
+
+  - name: "Client B"
+    email: "clientB@example.com"
+    phone: "+33687654321"
+    enterprise: "Entreprise B"
+    sales_contact: 3  # Refers to the 'sales' user (ID = 3)
+
+  - name: "Client C"
+    email: "clientC@example.com"
+    phone: "+33612345678"
+    enterprise: "Entreprise C"
+    sales_contact: 4  # Refers to the 'sales' user (ID = 2)
+
+  - name: "Client D"
+    email: "clientD@example.com"
+    phone: "+33687654321"
+    enterprise: "Entreprise D"
+    sales_contact: 4
+
+  - name: "Client E"
+    email: "clientE@example.com"
+    phone: "+33612345678"
+    enterprise: "Entreprise E"
+    sales_contact: 2  # Refers to the 'sales' user (ID = 2)
+
+  - name: "Client F"
+    email: "clientF@example.com"
+    phone: "+33687654321"
+    enterprise: "Entreprise F"
+    sales_contact: 3  # Refers to the 'sales' user (ID = 3)
+
+  - name: "Client G"
+    email: "clientG@example.com"
+    phone: "+33612345678"
+    enterprise: "Entreprise G"
+    sales_contact: 4  # Refers to the 'sales' user (ID = 2)
+
+  - name: "Client H"
+    email: "clientH@example.com"
+    phone: "+33687654321"
+    enterprise: "Entreprise H"
+    sales_contact: 4
+
+  - name: "Client I"
+    email: "clientI@example.com"
+    phone: "+33687654321"
+    enterprise: "Entreprise I"
+    sales_contact: 3  # Refers to the 'sales' user (ID = 3)
+
+  - name: "Client J"
+    email: "clientJ@example.com"
+    phone: "+33612345678"
+    enterprise: "Entreprise J"
+    sales_contact: 4
+
+contracts:
+  - customer_id: 1  # Refers to Client A
+    total_amount: 10000
+    due_amount: 2000
+    status: "signed"
+
+  - customer_id: 2  # Refers to Client B
+    total_amount: 5000
+    due_amount: 5000
+    status: "not_signed"
+
+  - customer_id: 3  # Refers to Client A
+    total_amount: 10000
+    due_amount: 0
+    status: "signed"
+
+  - customer_id: 1
+    total_amount: 5000
+    due_amount: 5000
+    status: "not_signed"
+
+  - customer_id: 4
+    total_amount: 26000
+    due_amount: 2000
+    status: "signed"
+
+  - customer_id: 5
+    total_amount: 5000
+    due_amount: 5000
+    status: "not_signed"
+
+  - customer_id: 6
+    total_amount: 9000
+    due_amount: 9000
+    status: "not_signed"
+
+  - customer_id: 7  # Refers to Client A
+    total_amount: 16000
+    due_amount: 0
+    status: "signed"
+
+  - customer_id: 8
+    total_amount: 4000
+    due_amount: 4000
+    status: "not_signed"
+
+  - customer_id: 9
+    total_amount: 27000
+    due_amount: 10000
+    status: "signed"
+
+  - customer_id: 10
+    total_amount: 15000
+    due_amount: 15000
+    status: "not_signed"
+
+  - customer_id: 10
+    total_amount: 9000
+    due_amount: 9000
+    status: "not_signed"
+
+events:
+  - name: "Conference A"
+    contract_id: 1  # Refers to Contract 1
+    customer_id: 1  # Refers to Client A
+    start_date: "2025-05-01 10:00:00"
+    end_date: "2025-05-01 18:00:00"
+    support_contact: 5  # Support Contact (ID = 5)
+    location: "Paris"
+    attendees: 50
+    notes: "Grand event"
+
+  - name: "Conference B"
+    contract_id: 3  # Refers to Contract 2
+    customer_id: 3  # Refers to Client B
+    start_date: "2025-03-15 09:00:00"
+    end_date: "2025-03-15 17:00:00"
+    support_contact: 6  # Support Contact (ID = 6)
+    location: "Lyon"
+    attendees: 30
+    notes: "Important conference"
+
+  - name: "Conference C"
+    contract_id: 1
+    customer_id: 1
+    start_date: "2025-04-01 09:00:00"
+    end_date: "2025-04-01 17:00:00"
+    support_contact: null  # No support contact
+    location: "Marseille"
+    attendees: 100
+    notes: "Large event"
+
+  - name: "Conference D"
+    contract_id: 5
+    customer_id: 4
+    start_date: "2025-03-15 09:00:00"
+    end_date: "2025-03-15 17:00:00"
+    support_contact: 6
+    location: "Montpellier"
+    attendees: 30
+    notes: "About cats"
+
+

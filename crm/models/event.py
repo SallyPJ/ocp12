@@ -19,11 +19,11 @@ class Event(Base):
         index=True,
     )
     name = Column(String(255), nullable=False)
-    contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False)
-    customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
+    contract_id = Column(Integer, ForeignKey("contract.id", ondelete="CASCADE"), nullable=False)
+    customer_id = Column(Integer, ForeignKey("customer.id", ondelete="CASCADE"), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
-    support_contact = Column(Integer, ForeignKey("user.id"), nullable=True)  # Peut être NULL si non assigné
+    support_contact = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     location = Column(String(255), nullable=False)
     attendees = Column(Integer, nullable=False)
     notes = Column(Text)

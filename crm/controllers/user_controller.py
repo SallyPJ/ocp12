@@ -54,3 +54,12 @@ class UserController (BaseController):
         if not users:
             return ["Aucun utilisateur trouvé."]
         return [f"{user.id} - {user.first_name} {user.last_name} ({user.email})" for user in users]
+
+    @require_permission("manage_employees")
+    def deactivate_user(self, user_id):
+        """Désactive un utilisateur (par exemple lors de la démission)."""
+        user = self.user_dao.get_by_id(user_id)
+        if user:
+            self.user_dao.deactivate_user(user_id)
+            return f"✅ L'utilisateur {user.email} a été désactivé."
+        return "❌ Utilisateur non trouvé."

@@ -8,12 +8,30 @@ def event():
     pass
 
 @event.command()
-def list():
-    """Afficher tous les événements."""
+@click.option('--all', is_flag=True, help="Afficher tous les événements sans appliquer de filtre.")
+@click.option('--no_support', is_flag=True, help="Filtrer les événements sans support.")
+@click.option('--location', type=str, help="Filtrer les événements par lieu.")
+@click.option('--start_date', type=str, help="Filtrer les événements à partir de cette date (YYYY-MM-DD).")
+@click.option('--end_date', type=str, help="Filtrer les événements jusqu'à cette date (YYYY-MM-DD).")
+def list(all, no_support, location, start_date, end_date):
+    """Afficher les événements selon les filtres spécifiés ou tous les événements si --all est activé."""
+    filters = {}
+    if no_support:
+        filters['no_support'] = True
+    if location:
+        filters['location'] = location
+    if start_date:
+        filters['start_date'] = start_date
+    if end_date:
+        filters['end_date'] = end_date
+
     with TransactionManager() as session:
         controller = EventController(session)
-        for e in controller.list_events():
-            click.echo(e)
+        events = controller.list_events(all=all, **filters)
+        if not events:
+            click.echo("Aucun événement trouvé.")
+        for event in events:
+            click.echo(event)
 
 @event.command()
 @click.argument("event_id", type=int)

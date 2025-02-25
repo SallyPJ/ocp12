@@ -19,10 +19,11 @@ class Contract(Base):
         autoincrement=True,
         index=True,
     )
-    customer_id = Column(Integer, ForeignKey("customer.id"), nullable=False)
-    sales_contact = Column(Integer, ForeignKey("user.id"), nullable=False)  # Doit être un commercial
+    customer_id = Column(Integer, ForeignKey("customer.id", ondelete="CASCADE"), nullable=False)
+    sales_contact = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))  # Doit être un commercial
     total_amount = Column(Integer, nullable=False)
     due_amount = Column(Integer, nullable=False)
     creation_date = Column(TIMESTAMP, default=func.now(), nullable=False)
     status = Column(Enum("signed", "not_signed"), nullable=False)  # ENUM pour statut
-    customer = relationship("Customer")
+    customer = relationship("Customer", backref="contracts")
+    sales_contact_user = relationship("User", backref="contracts")

@@ -11,6 +11,7 @@ pyjwt = "*"
 python-dotenv = "*"
 rich = "*"
 sentry-sdk = "*"
+pyyaml = "*"
 
 [dev-packages]
 

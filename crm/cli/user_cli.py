@@ -77,3 +77,14 @@ def list():
         users = user_controller.list_users()
         for user in users:
             click.echo(user)
+
+@user.command()
+def deactivate():
+    """Désactive un utilisateur par son ID (ex. lors de la démission)."""
+    # Demander à l'utilisateur de saisir l'ID de l'utilisateur à désactiver
+    user_id = click.prompt("Veuillez saisir l'ID de l'utilisateur à désactiver", type=int)
+
+    with TransactionManager() as session:
+        controller = UserController(session)
+        message = controller.deactivate_user(user_id)
+        click.echo(message)

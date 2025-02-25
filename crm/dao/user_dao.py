@@ -29,3 +29,10 @@ class UserDAO:
         for key, value in kwargs.items():
             if hasattr(user, key):
                 setattr(user, key, value)
+
+    def deactivate_user(self, user_id):
+        """Marque un utilisateur comme inactif (pour une démission par exemple)."""
+        user = self.get_by_id(user_id)
+        if user:
+            user.active = False
+            self.session.commit()
