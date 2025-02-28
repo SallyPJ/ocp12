@@ -25,6 +25,8 @@ class EventController(BaseController):
                 query = query.filter(Event.start_date >= filters['start_date'])
             if filters.get('end_date'):
                 query = query.filter(Event.end_date <= filters['end_date'])
+            if filters.get('support_contact'):
+                query = query.filter(Event.support_contact == filters['support_contact'])
 
         events = query.all()
 

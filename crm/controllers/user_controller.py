@@ -11,7 +11,7 @@ class UserController (BaseController):
         super().__init__(session, UserDAO)
 
     @require_permission("manage_employees")
-    def create_user(self, first_name, last_name, email, password, department_id):
+    def create_user(self, first_name, last_name, email, password, department_id, active=True):
         """Créer un nouvel utilisateur avec vérifications métier."""
         if self.dao.exists(email):
             return "❌ Un utilisateur avec cet email existe déjà."
@@ -21,7 +21,8 @@ class UserController (BaseController):
             last_name=last_name,
             email=email,
             department_id=department_id,
-            password=password
+            password=password,
+            active=active,
         )
 
         self.dao.save(new_user)

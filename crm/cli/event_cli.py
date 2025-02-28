@@ -65,23 +65,21 @@ def create():
 
 @event.command()
 @click.argument("event_id", type=int)
-def update(event_id):
-    """Modifier un événement avec saisie interactive."""
+@click.option("--name", type=str, default=None, help="Nouveau nom de l'événement")
+@click.option("--contract_id", type=int, default=None, help="Nouveau ID du contrat")
+@click.option("--customer_id", type=int, default=None, help="Nouveau ID du client")
+@click.option("--start_date", type=str, default=None, help="Nouvelle date de début (YYYY-MM-DD HH:MM)")
+@click.option("--end_date", type=str, default=None, help="Nouvelle date de fin (YYYY-MM-DD HH:MM)")
+@click.option("--support_contact", type=int, default=None, help="Nouveau ID du support")
+@click.option("--location", type=str, default=None, help="Nouveau lieu")
+@click.option("--attendees", type=int, default=None, help="Nouveau nombre de participants")
+@click.option("--notes", type=str, default=None, help="Nouvelles notes")
+def update(event_id, name, contract_id, customer_id, start_date, end_date, support_contact, location, attendees, notes):
+    """Modifier un événement avec les options fournies. Format : python main.py event update 1 --name "Nouvel événement" --location "Paris" --start_date "2025-05-01 10:00" --attendees 100
+"""
 
-    click.echo("Laissez vide si vous ne souhaitez pas modifier un champ.")
-
-    name = click.prompt("Nouveau nom de l'événement", type=str, default=None, show_default=False)
-    contract_id = click.prompt("Nouveau ID du contrat", type=int, default=None, show_default=False)
-    customer_id = click.prompt("Nouveau ID du client", type=int, default=None, show_default=False)
-    start_date = click.prompt("Nouvelle date de début (YYYY-MM-DD HH:MM)", type=str, default=None, show_default=False)
-    end_date = click.prompt("Nouvelle date de fin (YYYY-MM-DD HH:MM)", type=str, default=None, show_default=False)
-    support_contact = click.prompt("Nouveau ID du support (laisser vide si inchangé)", type=int, default=None,
-                                   show_default=False)
-    location = click.prompt("Nouveau lieu", type=str, default=None, show_default=False)
-    attendees = click.prompt("Nouveau nombre de participants", type=int, default=None, show_default=False)
-    notes = click.prompt("Nouvelles notes (laisser vide si inchangé)", type=str, default=None, show_default=False)
-
-    updates = {k: v for k, v in {
+    # Rassembler les changements dans un dictionnaire
+    updates = {
         "name": name,
         "contract_id": contract_id,
         "customer_id": customer_id,
@@ -91,7 +89,10 @@ def update(event_id):
         "location": location,
         "attendees": attendees,
         "notes": notes
-    }.items() if v is not None}
+    }
+
+    # Filtrer les options qui ne sont pas `None`
+    updates = {k: v for k, v in updates.items() if v is not None}
 
     if not updates:
         click.echo("❌ Aucun changement fourni.")
