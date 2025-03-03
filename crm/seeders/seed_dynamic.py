@@ -61,7 +61,7 @@ def seed_dynamic_data(session: Session):
             customer_id=contract_data["customer_id"],
             total_amount=contract_data["total_amount"],
             due_amount=contract_data["due_amount"],
-            status=contract_data["status"]
+            is_signed=contract_data["is_signed"]
         )
         session.add(contract)
 

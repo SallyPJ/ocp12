@@ -124,62 +124,62 @@ contracts:
   - customer_id: 1  # Refers to Client A
     total_amount: 10000
     due_amount: 2000
-    status: "signed"
+    is_signed: True
 
   - customer_id: 2  # Refers to Client B
     total_amount: 5000
     due_amount: 5000
-    status: "not_signed"
+    is_signed: False
 
   - customer_id: 3  # Refers to Client A
     total_amount: 10000
     due_amount: 0
-    status: "signed"
+    is_signed: True
 
   - customer_id: 1
     total_amount: 5000
     due_amount: 5000
-    status: "not_signed"
+    is_signed: False
 
   - customer_id: 4
     total_amount: 26000
     due_amount: 2000
-    status: "signed"
+    is_signed: True
 
   - customer_id: 5
     total_amount: 5000
     due_amount: 5000
-    status: "not_signed"
+    is_signed: False
 
   - customer_id: 6
     total_amount: 9000
     due_amount: 9000
-    status: "not_signed"
+    is_signed: False
 
   - customer_id: 7  # Refers to Client A
     total_amount: 16000
     due_amount: 0
-    status: "signed"
+    is_signed: True
 
   - customer_id: 8
     total_amount: 4000
     due_amount: 4000
-    status: "not_signed"
+    is_signed: False
 
   - customer_id: 9
     total_amount: 27000
     due_amount: 10000
-    status: "signed"
+    is_signed: True
 
   - customer_id: 10
     total_amount: 15000
     due_amount: 15000
-    status: "not_signed"
+    is_signed: False
 
   - customer_id: 10
     total_amount: 9000
     due_amount: 9000
-    status: "not_signed"
+    is_signed: False
 
 events:
   - name: "Conference A"

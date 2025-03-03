@@ -27,10 +27,12 @@ class CustomerController(BaseController):
     @require_permission("create_clients")
     def create_customer(self, name, email, phone, enterprise):
         """Crée un nouveau client."""
+        user_id = None if self.user.department_id == 4  else self.user_id
+
         new_customer = self.dao.create(name, email, phone, enterprise, self.user_id)
         return f"✅ Client {new_customer.name} ({new_customer.email}) ajouté avec succès."
 
-    @require_permission("edit_own_client")
+    @require_permission("edit_clients")
     def update_customer(self, customer_id, **kwargs):
         """Met à jour un client si l'utilisateur est responsable."""
         customer = self.dao.get_by_id(customer_id)
@@ -38,7 +40,7 @@ class CustomerController(BaseController):
             return "❌ Client non trouvé."
 
         # Vérifie si l'utilisateur est le commercial responsable
-        if customer.sales_contact != self.user_id:
+        if customer.sales_contact != self.user_id or self.user.department_id != 4:
             return "❌ Vous n'êtes pas responsable de ce client."
 
         updated_customer = self.dao.update(customer_id, **kwargs)

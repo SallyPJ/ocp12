@@ -1,5 +1,6 @@
 from models.event import Event
 
+
 class EventDAO:
     """Accès aux données événements (lecture seule)."""
 
@@ -9,6 +10,33 @@ class EventDAO:
     def get_all(self):
         """Récupère tous les événements."""
         return self.session.query(Event).all()
+
+    def get_by_name(self, name):
+        """Récupère un événement par nom."""
+        return self.session.query(Event).filter_by(name=name).first()
+
+
+    def get_filtered_events(self, all_events=False, **filters):
+        """
+        Récupère les événements selon les filtres.
+        - Si `all_events=True`, retourne tous les événements.
+        - Sinon, applique les filtres disponibles.
+        """
+        query = self.session.query(Event)
+
+        if not all_events:
+            if filters.get('no_support'):
+                query = query.filter(Event.support_contact == None)
+            if filters.get('location'):
+                query = query.filter(Event.location.ilike(f"%{filters['location']}%"))
+            if filters.get('start_date'):
+                query = query.filter(Event.start_date >= filters['start_date'])
+            if filters.get('end_date'):
+                query = query.filter(Event.end_date <= filters['end_date'])
+            if filters.get('support_contact'):
+                query = query.filter(Event.support_contact == filters['support_contact'])
+
+        return query.all()
 
     def get_by_id(self, event_id):
         """Récupère un événement par ID."""

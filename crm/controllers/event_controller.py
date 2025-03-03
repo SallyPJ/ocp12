@@ -13,25 +13,13 @@ class EventController(BaseController):
     @require_permission("read_all_events")
     def list_events(self, all=False, **filters):
         """Retourne une liste d'événements filtrés par les critères fournis ou tous les événements si 'all' est True."""
-        query = self.dao.session.query(Event)
 
-        if not all:
-            # Application dynamique des filtres
-            if filters.get('no_support'):
-                query = query.filter(Event.support_contact == None)
-            if filters.get('location'):
-                query = query.filter(Event.location.ilike(f"%{filters['location']}%"))
-            if filters.get('start_date'):
-                query = query.filter(Event.start_date >= filters['start_date'])
-            if filters.get('end_date'):
-                query = query.filter(Event.end_date <= filters['end_date'])
-            if filters.get('support_contact'):
-                query = query.filter(Event.support_contact == filters['support_contact'])
-
-        events = query.all()
+        # Utilisation de la méthode DAO
+        events = self.dao.get_filtered_events(all_events=all, **filters)
 
         if not events:
             return ["Aucun événement trouvé."]
+
         return [f"{e.id} - {e.name}, Lieu: {e.location}, Participants: {e.attendees}" for e in events]
 
     @require_permission("read_all_events")
@@ -42,9 +30,19 @@ class EventController(BaseController):
             return "❌ Événement non trouvé."
         return f"Événement {event.id} - {event.name}, Lieu: {event.location}, Participants: {event.attendees}"
 
-    @require_permission("create_event_for_client")
+    @require_permission("create_events")
     def create_event(self, name, contract_id, customer_id, start_date, end_date, support_contact, location, attendees,
                      notes):
+
+        contract = self.contract_dao.get_by_id(contract_id)
+        if not contract:
+            return "❌ Contrat non trouvé."
+
+        if not contract.is_signed:
+            return "❌ Impossible de créer un événement : le contrat n'est pas signé."
+
+        if contract.sales_contact != self.user_id and self.user.department_id != 4 :
+            return "❌ Accès refusé : seul le commercial responsable ou un admin peut créer un événement."
         """Crée un nouvel événement."""
         new_event = Event(
             name=name,
@@ -61,30 +59,13 @@ class EventController(BaseController):
         return f"✅ Événement '{name}' créé avec succès."
 
 
-
-    def can_edit_event(self, event_id):
-        """Vérifie si l'utilisateur a la permission de modifier un événement."""
-
-        if self.permission_service.has_permission(self.user_id, "edit_all_events"):
-            return True
-
-        # Vérifier si l'utilisateur a la permission d'éditer son propre événement
-        event = self.event_dao.get_by_id(event_id)
-        if event and event.support_contact == self.user_id:
-            if self.permission_service.has_permission(self.user_id, "edit_own_events"):
-                return True
-        # Si aucune condition n'est remplie, l'utilisateur n'a pas les droits
-        return False
-
-    @require_permission("edit_all_events")
+    @require_permission("edit_events")
     def update_event(self, event_id, **kwargs):
-        """Met à jour un événement avec vérification des permissions."""
-        if not self.can_edit_event(event_id):
-            return "❌ Vous n'avez pas la permission de modifier cet événement."
-
         event = self.event_dao.get_by_id(event_id)
         if not event:
             return "❌ Événement non trouvé."
+        if event.support_contact != self.user_id or self.user.department_id != 4:
+            return "�� Accès refusé : seul le commercial responsable ou un admin peut modifier un événement."
 
         for key, value in kwargs.items():
             if value is not None:

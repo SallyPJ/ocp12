@@ -3,7 +3,7 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
-    Enum,
+    Boolean,
     TIMESTAMP,
     func,
 )
@@ -24,6 +24,11 @@ class Contract(Base):
     total_amount = Column(Integer, nullable=False)
     due_amount = Column(Integer, nullable=False)
     creation_date = Column(TIMESTAMP, default=func.now(), nullable=False)
-    status = Column(Enum("signed", "not_signed"), nullable=False)  # ENUM pour statut
+    is_signed = Column(Boolean, nullable=False, default=False)
     customer = relationship("Customer", backref="contracts")
     sales_contact_user = relationship("User", backref="contracts")
+
+    @property
+    def is_paid(self):
+        """Retourne True si le contrat est payé (montant dû = 0), sinon False."""
+        return self.due_amount == 0
