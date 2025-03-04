@@ -1,6 +1,7 @@
 from dao.user_dao import UserDAO
 from services.permissions import require_permission
 from controllers.base_controller import BaseController
+from views.user_view import UserView
 
 
 class UserController(BaseController):
@@ -8,49 +9,53 @@ class UserController(BaseController):
 
     def __init__(self, session):
         super().__init__(session, UserDAO)
+        self.view = UserView()
 
     @require_permission("read_all_employees")
     def list_users(self):
         """Lists all users"""
         users = self.dao.get_all()
         if not users:
-            return ["Aucun utilisateur trouvé."]
-        return [f"{user.id} - {user.first_name} {user.last_name} ({user.email})" for user in users]
+            return self.view.no_user_found()
+        return self.view.display_users(users)
 
     @require_permission("create_employees")
     def create_user(self, first_name, last_name, email, password, department_id, active=True):
         """Creates a new user with business rules"""
         if self.dao.exists(email):
-            raise ValueError("❌ Un utilisateur avec cet email existe déjà.")
+            return self.view.user_exists()
 
-        return self.dao.create(first_name, last_name, email, password, department_id, active)
+        user = self.dao.create(first_name, last_name, email, password, department_id, active)
+        return self.view.user_created(user)
 
     @require_permission("edit_employees")
     def update_user(self, user_id, **kwargs):
         """Updates an existing user's information"""
         user = self.dao.get_by_id(user_id)
         if not user:
-            return "❌ Utilisateur non trouvé."
-        updates = {k: v for k, v in kwargs.items() if v is not None}
+            return self.view.user_not_found()
 
+        updates = {k: v for k, v in kwargs.items() if v is not None}
         self.dao.update(user, **updates)
-        return user
+        return self.view.user_updated(user)
 
     @require_permission("delete_employees")
     def delete_user(self, user_id):
         """Deletes a user"""
         user = self.dao.get_by_id(user_id)
         if not user:
-            return "❌ Utilisateur non trouvé."
+            return self.view.user_not_found()
 
         self.dao.delete(user)
-        return f"✅ Utilisateur {user.email} supprimé."
+        return self.view.user_deleted(user)
 
     @require_permission("edit_employees")
     def deactivate_user(self, user_id):
         """Deactivates a user"""
-        user = self.user_dao.get_by_id(user_id)
-        if user:
-            self.user_dao.deactivate_user(user_id)
-            return f"✅ L'utilisateur {user.email} a été désactivé."
-        return "❌ Utilisateur non trouvé."
+        user = self.dao.get_by_id(user_id)
+        if not user:
+            return self.view.user_not_found()
+
+        self.dao.deactivate_user(user_id)
+        return self.view.user_deactivated(user)
+

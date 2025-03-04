@@ -26,7 +26,7 @@ def require_permission(permission_name):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
-            if not hasattr(self, "user_id") or self.user_id is None:  # ✅ Vérification propre
+            if not hasattr(self, "user_id") or self.user_id is None:
                 print("🔴 Action refusée : Vous devez être connecté pour effectuer cette action.")
                 return
 

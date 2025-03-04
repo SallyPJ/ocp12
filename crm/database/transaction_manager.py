@@ -24,6 +24,6 @@ class TransactionManager:
                 print(f"🔴 Transaction échouée : {exc_value}")
             else:
                 self.session.commit()
-                print("✅ Transaction validée avec succès.")
+
         finally:
             self.session.close()

@@ -45,44 +45,30 @@ def list():
         controller = ContractController(session)
         contracts = controller.list_contracts()
 
-        if not contracts:
-            console.print("❌ Aucun contrat trouvé.", style="bold red")
+        if isinstance(contracts, str):  # Si c'est un message d'erreur
+            console.print(contracts, style="bold red")
             return
 
         table = Table(show_header=True, header_style="bold cyan")
-        table.add_column("ID", style="bold magenta", justify="center")
-        table.add_column("Client", style="white", justify="center")
-        table.add_column("Commercial", style="white", justify="center")
-        table.add_column("Montant Total (€)", style="green", justify="right")
-        table.add_column("Montant dû (€)", style="red", justify="right")
-        table.add_column("Signé", style="cyan", justify="center")
-        table.add_column("Payé", style="green", justify="center")
-        table.add_column("Date Création", style="yellow", justify="center")
+        table.add_column("ID", justify="center")
+        table.add_column("Client")
+        table.add_column("Commercial")
+        table.add_column("Montant Total (€)", justify="right")
+        table.add_column("Montant dû (€)", justify="right")
+        table.add_column("Signé", justify="center")
+        table.add_column("Payé", justify="center")
+        table.add_column("Date Création", justify="center")
 
         for c in contracts:
-            # 🛠 Vérifie si c'est un dictionnaire ou un objet SQLAlchemy
-            contract_id = c["id"] if isinstance(c, dict) else c.id
-            customer_name = c["customer_name"] if isinstance(c, dict) else c.customer.name
-            sales_contact_name = (
-                c["sales_contact_name"]
-                if isinstance(c, dict)
-                else f"{c.sales_contact_user.first_name} {c.sales_contact_user.last_name}"
-            )
-            total_amount = c["total_amount"] if isinstance(c, dict) else c.total_amount
-            due_amount = c["due_amount"] if isinstance(c, dict) else c.due_amount
-            is_signed = c["is_signed"] if isinstance(c, dict) else c.is_signed
-            is_paid = c["is_paid"] if isinstance(c, dict) else c.is_paid
-            creation_date = c["creation_date"] if isinstance(c, dict) else c.creation_date.strftime("%Y-%m-%d")
-
             table.add_row(
-                str(contract_id),
-                customer_name,
-                sales_contact_name,
-                f"{total_amount} €",
-                f"{due_amount} €",
-                "✅ Oui" if is_signed else "❌ Non",
-                "✅ Oui" if is_paid else "❌ Non",
-                creation_date,
+                str(c["ID"]),
+                c["Client"],
+                c["Commercial"],
+                f"{c['Montant Total (€)']} €",
+                f"{c['Montant dû (€)']} €",
+                f"✅" if c["Signé"] == "Oui" else "❌",
+                f"✅" if c["Payé"] == "Oui" else "❌",
+                c["Date Création"],
             )
 
         console.print(table)
@@ -94,24 +80,15 @@ def get(contract_id):
     """🔍 Afficher un contrat par ID sous forme de tableau."""
     with TransactionManager() as session:
         controller = ContractController(session)
-        contract = controller.get_contract(contract_id)  # ⬅️ Ajout des parenthèses ici !
+        contract = controller.get_contract(contract_id)
 
-        if isinstance(contract, str):  # Si `contract` est un message d'erreur, on l'affiche directement
+        if isinstance(contract, str):  # Si c'est un message d'erreur
             console.print(contract, style="bold red")
             return
 
-        table = Table(show_header=False, header_style="bold cyan")
-        table.add_row("[bold]ID[/bold]", str(contract.id))
-        table.add_row("[bold]Client[/bold]", contract.customer.name)
-        table.add_row(
-            "[bold]Commercial[/bold]",
-            f"{contract.sales_contact_user.first_name} {contract.sales_contact_user.last_name}",
-        )
-        table.add_row("[bold]Montant Total (€)[/bold]", f"{contract.total_amount} €")
-        table.add_row("[bold]Montant dû (€)[/bold]", f"{contract.due_amount} €")
-        table.add_row("[bold]Signé[/bold]", "✅ Oui" if contract.is_signed else "❌ Non")
-        table.add_row("[bold]Payé[/bold]", "✅ Oui" if contract.is_paid else "❌ Non")
-        table.add_row("[bold]Date de création[/bold]", contract.creation_date.strftime("%Y-%m-%d"))
+        table = Table(title="📜 Détails du Contrat", header_style="bold cyan")
+        for key, value in contract.items():
+            table.add_row(key, str(value))
 
         console.print(table)
 
@@ -131,14 +108,13 @@ def create():
 
 @contract.command()
 @click.argument("contract_id", type=int)
-@click.option("--customer-id", type=int, help="Nouvel ID client")
 @click.option("--sales-contact", type=int, help="Nouvel ID commercial")
 @click.option("--total-amount", type=int, help="Nouveau montant total (€)")
 @click.option("--due-amount", type=int, help="Nouveau montant dû (€)")
 @click.option(
     "--is-signed", type=click.Choice(["yes", "no"], case_sensitive=False), help="Le contrat est-il signé ? (yes/no)"
 )
-def update(contract_id, customer_id, sales_contact, total_amount, due_amount, is_signed):
+def update(contract_id, sales_contact, total_amount, due_amount, is_signed):
     """Modifier un contrat en affichant ses détails avant modification."""
 
     with TransactionManager() as session:

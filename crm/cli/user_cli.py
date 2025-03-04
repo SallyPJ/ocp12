@@ -3,12 +3,10 @@ from database.transaction_manager import TransactionManager
 from controllers.user_controller import UserController
 from models.user import User
 
-
 @click.group()
 def user():
     """Commandes pour gérer les utilisateurs."""
     pass
-
 
 @user.command()
 def create():
@@ -21,16 +19,8 @@ def create():
 
     with TransactionManager() as session:
         user_controller = UserController(session)
-        try:
-            user = user_controller.create_user(first_name, last_name, email, password, department_id)
-
-            if isinstance(user, User):  # Vérifier que user est bien un objet User
-                click.secho(f"✅ Utilisateur {user.email} créé avec succès.", fg="green")
-            else:
-                click.secho(f"❌ Erreur inattendue : {user}", fg="red")
-        except ValueError as e:
-            click.secho(f"❌ {e}", fg="red")
-
+        message = user_controller.create_user(first_name, last_name, email, password, department_id)
+        click.echo(message)
 
 @user.command()
 @click.argument("user_id", type=int)
@@ -44,12 +34,8 @@ def update(user_id, **kwargs):
     """Modifier un utilisateur existant."""
     with TransactionManager() as session:
         user_controller = UserController(session)
-        try:
-            user = user_controller.update_user(user_id, **kwargs)
-            click.secho(f"✅ Utilisateur {user.email} mis à jour avec succès.", fg="green")
-        except ValueError as e:
-            click.secho(f"❌ {e}", fg="red")
-
+        message = user_controller.update_user(user_id, **kwargs)
+        click.echo(message)
 
 @user.command()
 @click.argument("user_id", type=int)
@@ -69,7 +55,6 @@ def delete(user_id):
         else:
             click.echo("❌ Suppression annulée.")
 
-
 @user.command()
 def list():
     """Lister tous les utilisateurs."""
@@ -79,14 +64,12 @@ def list():
         for user in users:
             click.echo(user)
 
-
 @user.command()
-def deactivate():
+@click.argument("user_id", type=int)
+def deactivate(user_id):
     """Désactive un utilisateur par son ID (ex. lors de la démission)."""
-    # Demander à l'utilisateur de saisir l'ID de l'utilisateur à désactiver
-    user_id = click.prompt("Veuillez saisir l'ID de l'utilisateur à désactiver", type=int)
-
     with TransactionManager() as session:
         controller = UserController(session)
         message = controller.deactivate_user(user_id)
         click.echo(message)
+

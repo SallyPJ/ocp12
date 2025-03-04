@@ -8,6 +8,8 @@ from sqlalchemy import (
     Boolean,
 )
 from models.base import Base
+from models.department import Department
+
 
 
 class User(Base):

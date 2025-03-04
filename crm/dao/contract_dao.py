@@ -53,6 +53,8 @@ class ContractDAO:
 
         for key, value in kwargs.items():
             if hasattr(contract, key):
+                print(f"✅ Mise à jour {key} -> {value}")
+
                 setattr(contract, key, value)
 
         self.session.commit()

@@ -26,19 +26,10 @@ class AuthService:
 
     def __init__(self, session):
         self.user_dao = UserDAO(session)
-        self.device_id = self._get_device_id()
 
     ## 🔹 UTILITAIRES PRIVÉS 🔹 ##
 
-    def _get_device_id(self):
-        """Génère un identifiant unique pour l’appareil si inexistant."""
-        if os.path.exists(".device_id"):
-            with open(".device_id", "r") as f:
-                return f.read().strip()
-        device_id = str(uuid.uuid4())
-        with open(".device_id", "w") as f:
-            f.write(device_id)
-        return device_id
+
 
     def _read_session(self):
         """Lit les tokens stockés en session de manière sécurisée."""
@@ -77,7 +68,6 @@ class AuthService:
         payload = {
             "user_id": user.id,
             "password_hash": user._password[:10],  # Ajout d'une vérification d'intégrité
-            "device_id": self.device_id,
             "iss": ISSUER,
             "aud": AUDIENCE,
             "iat": datetime.datetime.utcnow(),
@@ -117,8 +107,6 @@ class AuthService:
         """Décode un JWT et applique des contrôles de sécurité."""
         try:
             decoded = jwt.decode(token, secret_key, algorithms=["HS256"], issuer=ISSUER, audience=AUDIENCE)
-            if decoded.get("device_id") != self.device_id:
-                return None  # Rejet si le token vient d'un autre appareil
             return decoded
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             return None  # Token invalide ou expiré
@@ -169,7 +157,7 @@ class AuthService:
             if new_access_token:
                 session_data["access_token"] = new_access_token
                 self._write_session(session_data)
-                print(f"✅ Nouveau token généré -> {new_access_token}")  # 🔍 Vérification
+                print(f"✅ Nouveau token généré ")  # 🔍 Vérification
                 return new_access_token
 
         print("❌ Aucun token valide disponible après refresh.")  # 🔍 Vérification
@@ -194,7 +182,6 @@ class AuthService:
             return {
                 "id": user.id,
                 "email": user.email,
-                "device_id": decoded.get("device_id"),
                 "expires_at": decoded["exp"],
             }
         return None

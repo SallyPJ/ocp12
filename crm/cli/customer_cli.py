@@ -27,10 +27,18 @@ def list():
         table.add_column("Email", style="magenta")
 
         for c in customers:
-            customer_id, name_email = c.split(" - ", 1)
-            table.add_row(customer_id, *name_email.split(" ("))
+            try:
+                customer_id, name_email = c.split(" - ", 1)
+                name, email = name_email.rsplit(" (", 1)
+                email = email.rstrip(")")
+                table.add_row(customer_id, name, email)
+            except ValueError:
+                console.print(f"❌ Erreur de formatage sur : {c}", style="bold red")
+                continue
 
         console.print(table)
+
+
 
 
 @customer.command()
@@ -48,7 +56,7 @@ def create():
     name = Prompt.ask("Nom du client")
     email = Prompt.ask("Email du client")
     phone = Prompt.ask("Numéro de téléphone")
-    enterprise = Prompt.ask("Entreprise (optionnel)", default="")
+    enterprise = Prompt.ask("Entreprise")
 
     with TransactionManager() as session:
         controller = CustomerController(session)
@@ -62,46 +70,7 @@ def create():
 @click.option("--phone", type=str, help="Nouveau numéro de téléphone")
 @click.option("--enterprise", type=str, help="Nouvelle entreprise du client")
 def update(customer_id, name, email, phone, enterprise):
-    """🛠️ Modifier un client avec confirmation."""
+    """Modifier un client."""
     with TransactionManager() as session:
         controller = CustomerController(session)
-
-        # 🔍 Récupérer les informations actuelles du client
-        client = controller.get_customer(customer_id)
-        if isinstance(client, str):  # Vérifie si c'est un message d'erreur
-            console.print(client, style="bold red")
-            return
-
-        # 📋 Affichage des informations actuelles du client sous forme de tableau
-        table = Table(show_header=False, title=f"📜 Client ID: {customer_id}", header_style="bold cyan")
-        table.add_row("Nom:", client.name)
-        table.add_row("Email:", client.email)
-        table.add_row("Téléphone:", client.phone)
-        table.add_row("Entreprise:", client.enterprise if client.enterprise else "N/A")
-        console.print(table)
-
-        # 📌 Création du dictionnaire des mises à jour (seuls les champs fournis sont mis à jour)
-        update_fields = {
-            k: v
-            for k, v in {"name": name, "email": email, "phone": phone, "enterprise": enterprise}.items()
-            if v is not None
-        }
-
-        if not update_fields:
-            console.print("❌ Aucun changement spécifié.", style="bold red")
-            return
-
-        # ✅ Confirmation avant mise à jour
-        console.print("\n📌 [bold yellow]Résumé des modifications :[/bold yellow]")
-        confirm_table = Table(show_header=False)
-        for field, value in update_fields.items():
-            confirm_table.add_row(field.capitalize(), value)
-        console.print(confirm_table)
-
-        if not Confirm.ask("Voulez-vous appliquer ces modifications ?", default=True):
-            console.print("❌ Mise à jour annulée.", style="bold red")
-            return
-
-        # 🔄 Exécution de la mise à jour
-        result = controller.update_customer(customer_id, **update_fields)
-        console.print(result, style="bold green")
+        console.print(controller.update_customer(customer_id, name=name, email=email, phone=phone, enterprise=enterprise), style="bold green")
