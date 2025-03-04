@@ -9,6 +9,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from models.base import Base
 
+
 class Customer(Base):
     __tablename__ = "customer"
 
@@ -20,9 +21,9 @@ class Customer(Base):
     )
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False)
-    phone = Column(String(20), nullable=False)  # "+33612345678"
+    phone = Column(String(20), nullable=False)  # Phone number (ex "+33612345678")
     enterprise = Column(String(255))
     creation_date = Column(TIMESTAMP, default=func.now(), nullable=False)
     last_update = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
-    sales_contact = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))  # Lien avec Sales
-    sales_rep = relationship("User")  # Relation vers l'utilisateur commercial
+    sales_contact = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))  # Link with Sales
+    sales_rep = relationship("User")  # Relationship with the User model (sales representative).

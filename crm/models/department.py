@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from models.base import Base
 from models.permission import Permission
 
-# 📌 Table d'association Many-to-Many entre Department et Permission
+# Many-to-Many association table between Department and Permission
 department_permissions = Table(
     "department_permissions",
     Base.metadata,
@@ -11,14 +11,20 @@ department_permissions = Table(
     Column("permission_id", Integer, ForeignKey("permission.id", ondelete="CASCADE"), primary_key=True),
 )
 
+
 class Department(Base):
+    """Represents a department in the system."""
+
     __tablename__ = "department"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(30), unique=True, nullable=False)
 
-    # Relation Many-to-Many avec les permissions
+    users = relationship("User", back_populates="department")
+
+    # Many-to-Many relationship with permissions
     permissions = relationship("Permission", secondary=department_permissions, backref="departments")
 
     def __repr__(self):
+        """Returns a string representation of the department."""
         return f"<Department {self.name}>"

@@ -1,11 +1,11 @@
 import os
 from database.transaction_manager import TransactionManager
-from seeders.reset_db import reset_database
 from seeders.seed_static import seed_static_data
 from seeders.seed_dynamic import seed_dynamic_data
 from models.base import Base
 from crm.config import DATABASE_URL
 from sqlalchemy import create_engine
+
 
 def run_seed():
     os.environ["SEEDING"] = "true"  # ✅ Active le mode seeding
@@ -30,6 +30,7 @@ def run_seed():
 
     os.environ["SEEDING"] = "false"  # ✅ Désactive après seeding
     print("\n🎉 ✅ SEED COMPLET : La base est prête à l'emploi !")
+
 
 if __name__ == "__main__":
     run_seed()

@@ -49,19 +49,19 @@ def seed_department_permissions(session: Session):
             # Check if the entry already exists
             exists = session.execute(
                 department_permissions.select().where(
-                    (department_permissions.c.department_id == department_id) &
-                    (department_permissions.c.permission_id == permission_id)
+                    (department_permissions.c.department_id == department_id)
+                    & (department_permissions.c.permission_id == permission_id)
                 )
             ).first()
 
             if not exists:
-                session.execute(department_permissions.insert().values(
-                    department_id=department_id,
-                    permission_id=permission_id
-                ))
+                session.execute(
+                    department_permissions.insert().values(department_id=department_id, permission_id=permission_id)
+                )
 
     session.commit()
     print("✅ Department permissions seeded ")
+
 
 def ensure_admin_exists(session: Session):
     """Vérifie s'il existe au moins un administrateur, sinon en crée un."""
@@ -84,7 +84,7 @@ def ensure_admin_exists(session: Session):
             last_name="EpicEvents",
             email="admin@epicevents.com",
             department_id=admin_department.id,
-            password=argon2.hash("AdminPass123!")  # ✅ Mot de passe sécurisé
+            password=argon2.hash("AdminPass123!"),  # ✅ Mot de passe sécurisé
         )
 
         session.add(super_admin)
@@ -113,9 +113,11 @@ def populate_db(session: Session):
     # ✅ Ajouter des utilisateurs
     user_controller.create_user("Alice", "Dupont", "alice.sales@epicevents.com", "SalesPass123!", sales_department.id)
     user_controller.create_user("Bob", "Martin", "bob.sales@epicevents.com", "SalesPass123!", sales_department.id)
-    user_controller.create_user("Carla", "Durand", "carla.management@epicevents.com", "MgmtPass123!",
-                                management_department.id)
-    user_controller.create_user("David", "Bernard", "david.support@epicevents.com", "SupportPass123!",
-                                support_department.id)
+    user_controller.create_user(
+        "Carla", "Durand", "carla.management@epicevents.com", "MgmtPass123!", management_department.id
+    )
+    user_controller.create_user(
+        "David", "Bernard", "david.support@epicevents.com", "SupportPass123!", support_department.id
+    )
 
     print("✅ Base de données peuplée avec succès.")

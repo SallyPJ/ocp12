@@ -1,11 +1,14 @@
 import click
 from database.transaction_manager import TransactionManager
 from controllers.user_controller import UserController
+from models.user import User
+
 
 @click.group()
 def user():
     """Commandes pour gérer les utilisateurs."""
     pass
+
 
 @user.command()
 def create():
@@ -18,38 +21,35 @@ def create():
 
     with TransactionManager() as session:
         user_controller = UserController(session)
-        message = user_controller.create_user(first_name, last_name, email, password, department_id)
-        click.echo(message)
+        try:
+            user = user_controller.create_user(first_name, last_name, email, password, department_id)
+
+            if isinstance(user, User):  # Vérifier que user est bien un objet User
+                click.secho(f"✅ Utilisateur {user.email} créé avec succès.", fg="green")
+            else:
+                click.secho(f"❌ Erreur inattendue : {user}", fg="red")
+        except ValueError as e:
+            click.secho(f"❌ {e}", fg="red")
+
 
 @user.command()
 @click.argument("user_id", type=int)
-def update(user_id):
-    """Mettre à jour un utilisateur."""
+@click.option("--first-name", help="Nouveau prénom")
+@click.option("--last-name", help="Nouveau nom")
+@click.option("--email", help="Nouvel email")
+@click.option("--password", help="Nouveau mot de passe")
+@click.option("--department-id", type=int, help="Nouvel ID du département")
+@click.option("--active", type=bool, help="L'utilisateur est-il actif ?")
+def update(user_id, **kwargs):
+    """Modifier un utilisateur existant."""
     with TransactionManager() as session:
         user_controller = UserController(session)
-        user = user_controller.user_dao.get_by_id(user_id)
+        try:
+            user = user_controller.update_user(user_id, **kwargs)
+            click.secho(f"✅ Utilisateur {user.email} mis à jour avec succès.", fg="green")
+        except ValueError as e:
+            click.secho(f"❌ {e}", fg="red")
 
-        if not user:
-            click.echo("❌ Utilisateur non trouvé.")
-            return
-
-        first_name = click.prompt("Nouveau prénom", default=user.first_name, show_default=True)
-        last_name = click.prompt("Nouveau nom", default=user.last_name, show_default=True)
-        email = click.prompt("Nouvel email", default=user.email, show_default=True)
-        password = click.prompt("Nouveau mot de passe (laisser vide pour ne pas changer)", hide_input=True, default="", show_default=False)
-        department_id = click.prompt("Nouvelle ID du département", type=int, default=user.department_id, show_default=True)
-
-        updates = {
-            "first_name": first_name,
-            "last_name": last_name,
-            "email": email,
-            "department_id": department_id
-        }
-        if password:
-            updates["password"] = password
-
-        message = user_controller.update_user(user_id, **updates)
-        click.echo(message)
 
 @user.command()
 @click.argument("user_id", type=int)
@@ -57,7 +57,7 @@ def delete(user_id):
     """Supprimer un utilisateur."""
     with TransactionManager() as session:
         user_controller = UserController(session)
-        user = user_controller.user_dao.get_by_id(user_id)
+        user = user_controller.dao.get_by_id(user_id)
 
         if not user:
             click.echo("❌ Utilisateur non trouvé.")
@@ -69,6 +69,7 @@ def delete(user_id):
         else:
             click.echo("❌ Suppression annulée.")
 
+
 @user.command()
 def list():
     """Lister tous les utilisateurs."""
@@ -77,6 +78,7 @@ def list():
         users = user_controller.list_users()
         for user in users:
             click.echo(user)
+
 
 @user.command()
 def deactivate():

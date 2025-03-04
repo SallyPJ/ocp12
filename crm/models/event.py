@@ -9,7 +9,10 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from models.base import Base
 
+
 class Event(Base):
+    """Represents an event in the system."""
+
     __tablename__ = "event"
 
     id = Column(
@@ -28,5 +31,5 @@ class Event(Base):
     attendees = Column(Integer, nullable=False)
     notes = Column(Text)
 
-    contract = relationship("Contract")  # Relation vers Contrat
-    support = relationship("User")  # Relation vers Support
+    contract = relationship("Contract")  # Relationship with Contract table
+    support = relationship("User")  # Relationship with User table (support contact)

@@ -1,5 +1,5 @@
 from dao.event_dao import EventDAO
-from models.event import Event
+from dao.contract_dao import ContractDAO
 from services.permissions import require_permission
 from controllers.base_controller import BaseController
 
@@ -9,14 +9,12 @@ class EventController(BaseController):
 
     def __init__(self, session):
         super().__init__(session, EventDAO)
+        self.contract_dao = ContractDAO(session)
 
     @require_permission("read_all_events")
     def list_events(self, all=False, **filters):
-        """Retourne une liste d'événements filtrés par les critères fournis ou tous les événements si 'all' est True."""
-
-        # Utilisation de la méthode DAO
+        """Lists filtered events (if all = True, retrieve all events"""
         events = self.dao.get_filtered_events(all_events=all, **filters)
-
         if not events:
             return ["Aucun événement trouvé."]
 
@@ -24,43 +22,32 @@ class EventController(BaseController):
 
     @require_permission("read_all_events")
     def get_event(self, event_id):
-        """Retourne un événement spécifique."""
-        event = self.event_dao.get_by_id(event_id)
+        """Retrieves a specific event by id"""
+        event = self.dao.get_by_id(event_id)
         if not event:
             return "❌ Événement non trouvé."
         return f"Événement {event.id} - {event.name}, Lieu: {event.location}, Participants: {event.attendees}"
 
     @require_permission("create_events")
-    def create_event(self, name, contract_id, customer_id, start_date, end_date, support_contact, location, attendees,
-                     notes):
-
+    def create_event(
+        self, name, contract_id, customer_id, start_date, end_date, support_contact, location, attendees, notes
+    ):
+        """Creates a new event if associated contract is signed"""
         contract = self.contract_dao.get_by_id(contract_id)
         if not contract:
-            return "❌ Contrat non trouvé."
+            raise ValueError("❌ Contrat non trouvé.")
 
         if not contract.is_signed:
-            return "❌ Impossible de créer un événement : le contrat n'est pas signé."
+            raise ValueError("❌ Le contrat n'est pas signé, impossible de créer l'événement.")
 
-        if contract.sales_contact != self.user_id and self.user.department_id != 4 :
-            return "❌ Accès refusé : seul le commercial responsable ou un admin peut créer un événement."
-        """Crée un nouvel événement."""
-        new_event = Event(
-            name=name,
-            contract_id=contract_id,
-            customer_id=customer_id,
-            start_date=start_date,
-            end_date=end_date,
-            support_contact=support_contact,
-            location=location,
-            attendees=attendees,
-            notes=notes
+        event = self.dao.create_event(
+            name, contract_id, customer_id, start_date, end_date, support_contact, location, attendees, notes
         )
-        self.dao.save(new_event)
-        return f"✅ Événement '{name}' créé avec succès."
-
+        return event  # ✅ Retourne l'événement créé
 
     @require_permission("edit_events")
     def update_event(self, event_id, **kwargs):
+        """Updates an existing event"""
         event = self.event_dao.get_by_id(event_id)
         if not event:
             return "❌ Événement non trouvé."
@@ -76,7 +63,7 @@ class EventController(BaseController):
 
     @require_permission("delete_event")
     def delete_event(self, event_id):
-        """Supprime un événement."""
+        """Deletes an event"""
         event = self.dao.get_by_id(event_id)
         if not event:
             return "❌ Événement non trouvé."

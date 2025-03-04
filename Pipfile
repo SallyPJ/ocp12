@@ -12,6 +12,11 @@ python-dotenv = "*"
 rich = "*"
 sentry-sdk = "*"
 pyyaml = "*"
+pytest = "*"
+pylint = "*"
+flake8 = "*"
+flake8-html = "*"
+rich-click = "*"
 
 [dev-packages]
 

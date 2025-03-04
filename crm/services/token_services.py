@@ -4,9 +4,11 @@ import datetime
 import functools
 from config import SECRET_KEY, REFRESH_SECRET
 
+
 def save_tokens(access_token, refresh_token):
     with open(".auth_token", "w") as f:
         json.dump({"access_token": access_token, "refresh_token": refresh_token}, f)
+
 
 def load_tokens():
     """Charge les tokens depuis le fichier."""
@@ -16,6 +18,7 @@ def load_tokens():
         return tokens.get("access_token"), tokens.get("refresh_token")
     except (FileNotFoundError, json.JSONDecodeError):
         return None, None
+
 
 def verify_token(token):
     """Vérifie la validité d’un token JWT."""
@@ -29,6 +32,7 @@ def verify_token(token):
         print("❌ Invalid token.")
         return None
 
+
 def refresh_access_token(refresh_token):
     """Génère un nouveau token d’accès à partir du refresh token."""
     try:
@@ -36,7 +40,7 @@ def refresh_access_token(refresh_token):
         new_access_payload = {
             "user_id": payload["user_id"],
             "email": payload["email"],
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
         }
         new_access_token = jwt.encode(new_access_payload, SECRET_KEY, algorithm="HS256")
         print("✅ Access token refreshed automatically!")
@@ -48,9 +52,11 @@ def refresh_access_token(refresh_token):
         print("❌ Invalid refresh token.")
         return None
 
+
 def require_auth(func):
     """Décorateur qui vérifie la validité du token avant d'exécuter une fonction.
     Il n’ouvre pas de transaction, la session doit être gérée par l’appelant."""
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         access_token, refresh_token = load_tokens()
@@ -69,4 +75,5 @@ def require_auth(func):
         # On peut injecter des infos utilisateur dans kwargs si besoin
         kwargs["user_payload"] = payload
         return func(*args, **kwargs)
+
     return wrapper

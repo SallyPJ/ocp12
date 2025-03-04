@@ -38,5 +38,3 @@ def require_permission(permission_name):
         return wrapper
 
     return decorator
-
-

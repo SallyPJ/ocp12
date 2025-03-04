@@ -1,7 +1,6 @@
 from sqlalchemy import (
     Column,
     Integer,
-    String,
     ForeignKey,
     Boolean,
     TIMESTAMP,
@@ -10,7 +9,10 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from models.base import Base
 
+
 class Contract(Base):
+    """Represents a contract in the system."""
+
     __tablename__ = "contract"
 
     id = Column(
@@ -30,5 +32,5 @@ class Contract(Base):
 
     @property
     def is_paid(self):
-        """Retourne True si le contrat est payé (montant dû = 0), sinon False."""
+        """Returns True if the contract is fully paid (due amount = 0), otherwise False."""
         return self.due_amount == 0

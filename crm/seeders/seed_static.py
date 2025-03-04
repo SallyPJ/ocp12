@@ -45,20 +45,18 @@ def seed_department_permissions(session: Session):
             # Check if the entry already exists
             exists = session.execute(
                 department_permissions.select().where(
-                    (department_permissions.c.department_id == department_id) &
-                    (department_permissions.c.permission_id == permission_id)
+                    (department_permissions.c.department_id == department_id)
+                    & (department_permissions.c.permission_id == permission_id)
                 )
             ).first()
 
             if not exists:
-                session.execute(department_permissions.insert().values(
-                    department_id=department_id,
-                    permission_id=permission_id
-                ))
+                session.execute(
+                    department_permissions.insert().values(department_id=department_id, permission_id=permission_id)
+                )
 
     session.commit()
     print("✅ Department permissions seeded")
-
 
 
 def seed_static_data(session: Session):

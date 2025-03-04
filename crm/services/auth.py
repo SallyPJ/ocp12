@@ -8,7 +8,10 @@ from passlib.hash import argon2
 from config import SECRET_KEY, REFRESH_SECRET_KEY, ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN
 
 try:
-    import keyring  # 🔐 Utilisation de keyring pour un stockage sécurisé
+    import keyring
+    from keyring.errors import PasswordDeleteError
+
+    # 🔐 Utilisation de keyring pour un stockage sécurisé
     SECURE_STORAGE = True
 except ImportError:
     SECURE_STORAGE = False
@@ -16,6 +19,7 @@ except ImportError:
 SESSION_FILE = ".session"
 ISSUER = "EpicEvents"
 AUDIENCE = "epic-events-cli"
+
 
 class AuthService:
     """Gère l'authentification et la gestion sécurisée des tokens JWT."""
@@ -58,7 +62,11 @@ class AuthService:
     def _clear_session(self):
         """Supprime le fichier de session sécurisé."""
         if SECURE_STORAGE:
-            keyring.delete_password("EpicEvents", "session")
+            try:
+                if keyring.delete_password("EpicEvents", "session") is not None:
+                    keyring.delete_password("EpicEvents", "session")
+            except PasswordDeleteError:
+                pass  # ✅ Empê
         elif os.path.exists(SESSION_FILE):
             os.remove(SESSION_FILE)
 
@@ -74,7 +82,7 @@ class AuthService:
             "aud": AUDIENCE,
             "iat": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in),
-            "type": token_type
+            "type": token_type,
         }
         return jwt.encode(payload, secret_key, algorithm="HS256")
 
@@ -82,7 +90,7 @@ class AuthService:
         """Génère un access_token et un refresh_token avec protection renforcée."""
         return (
             self._generate_token(user, ACCESS_TOKEN_EXPIRES_IN, SECRET_KEY, "access"),
-            self._generate_token(user, REFRESH_TOKEN_EXPIRES_IN, REFRESH_SECRET_KEY, "refresh")
+            self._generate_token(user, REFRESH_TOKEN_EXPIRES_IN, REFRESH_SECRET_KEY, "refresh"),
         )
 
     ## 🔹 AUTHENTIFICATION 🔹 ##
@@ -152,8 +160,7 @@ class AuthService:
 
         decoded = self._decode_token(access_token, SECRET_KEY)
         if decoded:
-            print(f"✅ Token valide détecté -> {access_token}")  # 🔍 Vérification
-            return access_token # ✅ Le token est encore valide
+            return access_token  # ✅ Le token est encore valide
 
         # 🔄 Si expiré, on tente un refresh
         if refresh:  # ✅ On ne tente un refresh QUE si c’est autorisé
@@ -167,7 +174,6 @@ class AuthService:
 
         print("❌ Aucun token valide disponible après refresh.")  # 🔍 Vérification
         return None
-
 
     def is_logged_in(self):
         """Vérifie si un utilisateur est connecté et retourne ses informations."""
@@ -189,6 +195,6 @@ class AuthService:
                 "id": user.id,
                 "email": user.email,
                 "device_id": decoded.get("device_id"),
-                "expires_at": decoded["exp"]
+                "expires_at": decoded["exp"],
             }
         return None

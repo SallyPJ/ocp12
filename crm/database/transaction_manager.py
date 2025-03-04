@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from config import DATABASE_URL
 
 # Initialisation de l'engine et de la fabrique de sessions
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 SessionFactory = sessionmaker(bind=engine)
 db_session = scoped_session(SessionFactory)
 

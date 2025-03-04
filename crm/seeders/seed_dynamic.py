@@ -4,12 +4,13 @@ from models.user import User
 from models.customer import Customer
 from models.contract import Contract
 from models.event import Event
-from passlib.hash import argon2
+
 
 def load_yaml_data(file_path):
     """Charge les données dynamiques depuis un fichier YAML."""
     with open(file_path, "r", encoding="utf-8") as file:
         return yaml.safe_load(file)
+
 
 def seed_dynamic_data(session: Session):
     """Insère les données dynamiques depuis un fichier YAML."""
@@ -30,7 +31,7 @@ def seed_dynamic_data(session: Session):
             email=user_data["email"],
             password=user_data["password"],
             department_id=user_data["department_id"],
-            active=True
+            active=True,
         )
         session.add(user)
         session.flush()
@@ -47,7 +48,7 @@ def seed_dynamic_data(session: Session):
             email=customer_data["email"],
             phone=customer_data["phone"],
             enterprise=customer_data.get("enterprise", ""),
-            sales_contact=customer_data["sales_contact"]  # Référence à un commercial existant
+            sales_contact=customer_data["sales_contact"],  # Référence à un commercial existant
         )
         session.add(customer)
 
@@ -61,7 +62,8 @@ def seed_dynamic_data(session: Session):
             customer_id=contract_data["customer_id"],
             total_amount=contract_data["total_amount"],
             due_amount=contract_data["due_amount"],
-            is_signed=contract_data["is_signed"]
+            is_signed=contract_data["is_signed"],
+            sales_contact=contract_data["sales_contact"],  # Référence à un commercial existant
         )
         session.add(contract)
 
@@ -80,7 +82,7 @@ def seed_dynamic_data(session: Session):
             support_contact=event_data.get("support_contact", None),  # support_contact peut être None
             location=event_data["location"],
             attendees=event_data["attendees"],
-            notes=event_data["notes"]
+            notes=event_data["notes"],
         )
         session.add(event)
 
