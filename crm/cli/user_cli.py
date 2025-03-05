@@ -1,14 +1,56 @@
 import click
+import rich_click as rclick
+from rich.console import Console
+from rich.table import Table
 from database.transaction_manager import TransactionManager
 from controllers.user_controller import UserController
 from models.user import User
 
-@click.group()
+rclick.rich_click.MAX_WIDTH = 100
+rclick.rich_click.USE_MARKDOWN = True
+
+console = Console()
+
+@click.group(cls=rclick.RichGroup)
 def user():
     """Commandes pour gérer les utilisateurs."""
     pass
 
+@user.command(cls=rclick.RichCommand)
+def list():
+    """Lister tous les utilisateurs."""
+    with TransactionManager() as session:
+        user_controller = UserController(session)
+        users = user_controller.list_users()
+        table = Table(title="📋 Liste des Utilisateurs" if len(users) > 1 else "👤 Détails de l'utilisateur", show_lines=True)
+        table.add_column("ID", style="cyan", justify="center")
+        table.add_column("Prénom", style="bold")
+        table.add_column("Nom", style="bold")
+        table.add_column("Email", style="magenta")
+        table.add_column("Département", style="yellow")
+        table.add_column("Statut", style="green")
+
+        for user in users:
+            department_info = f"{user.department.id} - {user.department.name}" if user.department else "N/A"
+            table.add_row(
+                str(user.id),
+                user.first_name,
+                user.last_name,
+                user.email,
+                department_info,
+                "✅ Actif" if user.active else "❌ Inactif"
+            )
+        console.print(table)
+
 @user.command()
+@click.argument("user_id", type=int)
+def get(user_id):
+    """Afficher les informations d'un utilisateur par ID."""
+    with TransactionManager() as session:
+        controller = UserController(session)
+        controller.get_user(user_id)
+
+@user.command(cls=rclick.RichCommand)
 def create():
     """Créer un nouvel utilisateur via le CLI."""
     first_name = click.prompt("Prénom")
@@ -22,7 +64,7 @@ def create():
         message = user_controller.create_user(first_name, last_name, email, password, department_id)
         click.echo(message)
 
-@user.command()
+@user.command(cls=rclick.RichCommand)
 @click.argument("user_id", type=int)
 @click.option("--first-name", help="Nouveau prénom")
 @click.option("--last-name", help="Nouveau nom")
@@ -37,7 +79,7 @@ def update(user_id, **kwargs):
         message = user_controller.update_user(user_id, **kwargs)
         click.echo(message)
 
-@user.command()
+@user.command(cls=rclick.RichCommand)
 @click.argument("user_id", type=int)
 def delete(user_id):
     """Supprimer un utilisateur."""
@@ -55,16 +97,8 @@ def delete(user_id):
         else:
             click.echo("❌ Suppression annulée.")
 
-@user.command()
-def list():
-    """Lister tous les utilisateurs."""
-    with TransactionManager() as session:
-        user_controller = UserController(session)
-        users = user_controller.list_users()
-        for user in users:
-            click.echo(user)
 
-@user.command()
+@user.command(cls=rclick.RichCommand)
 @click.argument("user_id", type=int)
 def deactivate(user_id):
     """Désactive un utilisateur par son ID (ex. lors de la démission)."""
@@ -72,4 +106,32 @@ def deactivate(user_id):
         controller = UserController(session)
         message = controller.deactivate_user(user_id)
         click.echo(message)
+
+
+def display_users(users):
+    """Affiche une liste d'utilisateurs sous forme de tableau."""
+    if not users:
+        console.print("❌ Aucun utilisateur trouvé.", style="bold red")
+        return
+
+    table = Table(title="📋 Liste des Utilisateurs" if len(users) > 1 else "👤 Détails de l'utilisateur", show_lines=True)
+    table.add_column("ID", style="cyan", justify="center")
+    table.add_column("Prénom", style="bold")
+    table.add_column("Nom", style="bold")
+    table.add_column("Email", style="magenta")
+    table.add_column("Département", style="yellow")
+    table.add_column("Statut", style="green")
+
+    for user in users:
+        department_info = f"{user['Département']}" if user.get("Département") else "N/A"
+        table.add_row(
+            str(user["ID"]),
+            user["Prénom"],
+            user["Nom"],
+            user["Email"],
+            department_info,
+            "✅ Actif" if user["Statut"] else "❌ Inactif"
+        )
+
+    console.print(table)
 

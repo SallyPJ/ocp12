@@ -3,7 +3,17 @@ class UserView:
 
     @staticmethod
     def display_users(users):
-        return [f"{user.id} - {user.first_name} {user.last_name} ({user.email})" for user in users]
+        return [
+            {
+                "ID": user.id,
+                "Prénom": user.first_name,
+                "Nom": user.last_name,
+                "Email": user.email,
+                "Département": user.department_id if user.department_id else "N/A",
+                "Statut": user.active
+            }
+            for user in users
+        ]
 
     @staticmethod
     def user_exists():

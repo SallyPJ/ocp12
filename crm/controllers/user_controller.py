@@ -17,7 +17,9 @@ class UserController(BaseController):
         users = self.dao.get_all()
         if not users:
             return self.view.no_user_found()
-        return self.view.display_users(users)
+        return users
+
+
 
     @require_permission("create_employees")
     def create_user(self, first_name, last_name, email, password, department_id, active=True):
