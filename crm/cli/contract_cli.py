@@ -132,13 +132,15 @@ def update(contract_id, sales_contact, total_amount, due_amount, is_signed):
         table.add_column("Champ", style="bold")
         table.add_column("Valeur", style="white")
 
-        table.add_row("ID", str(contract.id))
-        table.add_row("Client", contract.customer.name)
-        table.add_row("Commercial", f"{contract.sales_contact_user.first_name} {contract.sales_contact_user.last_name}")
-        table.add_row("Montant Total (€)", f"{contract.total_amount} €")
-        table.add_row("Montant dû (€)", f"{contract.due_amount} €")
-        table.add_row("Signé", "✅ Oui" if contract.is_signed else "❌ Non")
-        table.add_row("Date de création", contract.creation_date.strftime("%Y-%m-%d"))
+        table.add_row("ID", str(contract["ID"]))  # ✅ Accès via le dictionnaire
+        table.add_row("Client", contract["Client"])
+        table.add_row("Commercial", contract["Commercial"])
+        table.add_row("Montant Total (€)", f"{contract['Montant Total (€)']} €")
+        table.add_row("Montant dû (€)", f"{contract['Montant dû (€)']} €")
+        table.add_row("Signé", contract["Signé"])
+        table.add_row("Payé", contract["Payé"])
+        table.add_row("Date Création", contract["Date Création"])
+        table.add_row("Événement associé", contract["Événement associé"])
 
         console.print(table)
 
@@ -149,7 +151,6 @@ def update(contract_id, sales_contact, total_amount, due_amount, is_signed):
 
         # 🛠 Appliquer uniquement les modifications fournies
         updates = {
-            "customer_id": customer_id,
             "sales_contact": sales_contact,
             "total_amount": total_amount,
             "due_amount": due_amount,

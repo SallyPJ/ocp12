@@ -4,7 +4,7 @@ import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from services.auth import AuthService
+from services.auth_service import AuthService
 from database.transaction_manager import TransactionManager
 from controllers.auth_controller import AuthController
 
@@ -65,13 +65,13 @@ def logout():
 def status():
     """Affiche le statut de connexion de l'utilisateur."""
     with TransactionManager() as session:
-        auth_service = AuthService(session)
-        user_info = auth_service.is_logged_in()
+        auth_controller = AuthController(session)
+        user_info = auth_controller.is_logged_in()
 
         if user_info:
-            exp_time = datetime.datetime.utcfromtimestamp(user_info["expires_at"])
+
             print(f"✅ Connecté en tant que : {user_info['email']}")
             print(f"🔑 ID utilisateur : {user_info['id']}")
-            print(f"📅 Expiration du token : {exp_time} UTC")
+
         else:
             print("❌ Aucun utilisateur connecté.")

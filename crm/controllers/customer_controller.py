@@ -1,6 +1,6 @@
 from dao.customer_dao import CustomerDAO
 from dao.user_dao import UserDAO
-from services.permissions import require_permission
+from decorators.auth_decorators import require_auth, require_permission
 from controllers.base_controller import BaseController
 from views.customer_view import CustomerView
 
@@ -13,6 +13,7 @@ class CustomerController(BaseController):
         self.user_dao = UserDAO(session)
         self.view = CustomerView()
 
+    @require_auth
     @require_permission("read_all_clients")
     def list_customers(self):
         """Lists all customers"""
@@ -21,6 +22,7 @@ class CustomerController(BaseController):
             return self.view.no_customers_found()
         return self.view.display_customers(customers)
 
+    @require_auth
     @require_permission("read_all_clients")
     def get_customer(self, customer_id):
         """Retrieves a specific customer"""
@@ -29,6 +31,7 @@ class CustomerController(BaseController):
             return self.view.customer_not_found()
         return self.view.display_customer(customer)
 
+    @require_auth
     @require_permission("create_clients")
     def create_customer(self, name, email, phone, enterprise):
         """Creates a new customer"""
@@ -42,6 +45,7 @@ class CustomerController(BaseController):
         new_customer = self.dao.create(name, email, phone, enterprise, sales_contact)
         return self.view.customer_created(new_customer)
 
+    @require_auth
     @require_permission("edit_clients")
     def update_customer(self, customer_id, **kwargs):
         """Updates an existing customer if user is sales contact"""
@@ -51,7 +55,8 @@ class CustomerController(BaseController):
             return self.view.customer_not_found()
 
         # Vérifier si l'utilisateur est autorisé à modifier ce client
-        if customer.sales_contact != self.user_id and self.user.department_id != 4:
+        user = self.user_dao.get_by_id(self.user_id)
+        if customer.sales_contact != self.user_id and user.department_id != 4:
             return self.view.access_denied()
 
         # Ne garder que les valeurs non nulles

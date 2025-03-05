@@ -1,7 +1,7 @@
 from dao.event_dao import EventDAO
 from dao.contract_dao import ContractDAO
 from dao.user_dao import UserDAO
-from services.permissions import require_permission
+from decorators.auth_decorators import require_auth, require_permission
 from controllers.base_controller import BaseController
 from views.event_view import EventView
 
@@ -15,6 +15,7 @@ class EventController(BaseController):
         self.user_dao = UserDAO(session)
         self.view = EventView()
 
+    @require_auth
     @require_permission("read_all_events")
     def list_events(self, all=False, **filters):
         """Lists filtered events (if all = True, retrieve all events)"""
@@ -23,6 +24,8 @@ class EventController(BaseController):
             return self.view.no_events_found()
         return self.view.display_events(events)
 
+    @require_auth
+
     @require_permission("read_all_events")
     def get_event(self, event_id):
         """Retrieves a specific event by ID"""
@@ -30,6 +33,8 @@ class EventController(BaseController):
         if not event:
             return self.view.no_event_found()
         return self.view.display_event(event)
+
+    @require_auth
 
     @require_permission("create_events")
     def create_event(self, name, contract_id, start_date, end_date, support_contact, location, attendees, notes):
@@ -44,15 +49,16 @@ class EventController(BaseController):
         customer_id = contract.customer_id
 
         user = self.user_dao.get_by_id(self.user_id)
-        if user.id == contract.sales_contact and user.department_id == 4 :
-
+        if user.id != contract.sales_contact and user.department_id != 4:
+            return self.view.access_denied()
+        else:
             event = self.dao.create_event(
                 name, contract_id, customer_id, start_date, end_date, support_contact, location, attendees, notes
             )
             return self.view.event_created(event.name)
-        else:
-            return self.view.access_denied()
 
+
+    @require_auth
 
     @require_permission("edit_events")
     def update_event(self, event_id, **kwargs):
@@ -73,6 +79,8 @@ class EventController(BaseController):
 
         self.dao.update(event, **valid_updates)
         return self.view.event_updated(event.name)
+
+    @require_auth
 
     @require_permission("delete_event")
     def delete_event(self, event_id):

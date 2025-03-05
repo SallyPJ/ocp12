@@ -50,6 +50,8 @@ def get(user_id):
         controller = UserController(session)
         controller.get_user(user_id)
 
+
+
 @user.command(cls=rclick.RichCommand)
 def create():
     """Créer un nouvel utilisateur via le CLI."""
@@ -108,30 +110,4 @@ def deactivate(user_id):
         click.echo(message)
 
 
-def display_users(users):
-    """Affiche une liste d'utilisateurs sous forme de tableau."""
-    if not users:
-        console.print("❌ Aucun utilisateur trouvé.", style="bold red")
-        return
-
-    table = Table(title="📋 Liste des Utilisateurs" if len(users) > 1 else "👤 Détails de l'utilisateur", show_lines=True)
-    table.add_column("ID", style="cyan", justify="center")
-    table.add_column("Prénom", style="bold")
-    table.add_column("Nom", style="bold")
-    table.add_column("Email", style="magenta")
-    table.add_column("Département", style="yellow")
-    table.add_column("Statut", style="green")
-
-    for user in users:
-        department_info = f"{user['Département']}" if user.get("Département") else "N/A"
-        table.add_row(
-            str(user["ID"]),
-            user["Prénom"],
-            user["Nom"],
-            user["Email"],
-            department_info,
-            "✅ Actif" if user["Statut"] else "❌ Inactif"
-        )
-
-    console.print(table)
 

@@ -61,7 +61,16 @@ def create(ctx):
         notes = click.prompt("Notes (optionnel)", type=str, default="", show_default=False)
         notes = notes if notes.strip() else None
         click.echo(
-            controller.create_event(name, contract_id, start_date, end_date, location, attendees, notes))
+            controller.create_event(
+                name=name,
+                contract_id=contract_id,
+                start_date=start_date,
+                end_date=end_date,
+                location=location,
+                attendees=attendees,
+                support_contact=None,
+                notes=notes
+            ))
 
 
 

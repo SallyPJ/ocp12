@@ -1,9 +1,10 @@
 from dao.contract_dao import ContractDAO
 from dao.customer_dao import CustomerDAO
 from dao.user_dao import UserDAO
-from services.permissions import require_permission
+from decorators.auth_decorators import require_auth, require_permission
 from controllers.base_controller import BaseController
 from views.contract_view import ContractView
+import sentry_sdk
 
 
 class ContractController(BaseController):
@@ -15,6 +16,7 @@ class ContractController(BaseController):
         self.user_dao = UserDAO(session)
         self.view = ContractView()
 
+    @require_auth
     @require_permission("read_all_contracts")
     def list_contracts(self, **filters):
         """Lists contracts with optional filters"""
@@ -23,6 +25,7 @@ class ContractController(BaseController):
             return self.view.no_contracts_found()
         return self.view.format_contracts(contracts)
 
+    @require_auth
     @require_permission("read_all_contracts")
     def get_contract(self, contract_id):
         """Retrieves a specific contract"""
@@ -31,6 +34,7 @@ class ContractController(BaseController):
             return self.view.contract_not_found()
         return self.view.format_contracts(contract)
 
+    @require_auth
     @require_permission("create_contracts")
     def create_contract(self, customer_id, total_amount, due_amount, is_signed):
         """Creates a new contract"""
@@ -40,8 +44,14 @@ class ContractController(BaseController):
             return self.view.error_message(str(e))
 
         contract = self.dao.create_contract(customer_id, sales_contact, total_amount, due_amount, is_signed)
+        if is_signed:
+            sentry_sdk.capture_message(
+                f"📜 Contrat signé : ID {contract.id} - Client {contract.customer.name} par User ID {self.user_id}",
+                level="info"
+            )
         return self.view.contract_created(contract)
 
+    @require_auth
     @require_permission("edit_contracts")
     def update_contract(self, contract_id, **kwargs):
         """Updates an existing contract"""
@@ -53,7 +63,13 @@ class ContractController(BaseController):
         if contract.sales_contact != user.id and user.department_id not in (1, 4):
             return self.view.access_denied()
 
+        was_unsigned = not contract.is_signed
+
         updated_contract = self.dao.update_contract(contract_id, **kwargs)
+        is_now_signed = updated_contract.is_signed
+        if was_unsigned and is_now_signed:
+            message = f"📜 Le contrat {contract.id} a été signé."
+            sentry_sdk.capture_message(message, level="info")
         return self.view.contract_updated(updated_contract)
 
     def _get_sales_contact_for_customer(self, customer_id):
