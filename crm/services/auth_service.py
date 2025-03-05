@@ -3,6 +3,7 @@ from dao.user_dao import UserDAO
 from services.token_service import TokenService
 from config import SECRET_KEY, REFRESH_SECRET_KEY, ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN
 
+
 class AuthService:
     """Manages secure user authentication."""
 
@@ -48,7 +49,3 @@ class AuthService:
             }
 
         return None
-
-
-
-

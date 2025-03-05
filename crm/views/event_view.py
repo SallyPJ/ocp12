@@ -6,40 +6,46 @@ class EventView:
         return "Aucun événement trouvé."
 
     @staticmethod
+    def format_events(event):
+        """Formats a single event into a dictionary for display"""
+        return {
+            "ID": event.id,
+            "Nom": event.name,
+            "Lieu": event.location,
+            "Début": event.start_date.strftime("%Y-%m-%d %H:%M"),
+            "Fin": event.end_date.strftime("%Y-%m-%d %H:%M"),
+            "Participants": event.attendees,
+            "Support": f"{event.support.first_name} {event.support.last_name}" if event.support else "Non assigné",
+        }
+
+    @staticmethod
     def display_events(events):
-        """Formats a list of events for display.
-
-        This method takes a list of event objects and converts each event
-        into a human-readable string using the `format_event` method.
-        The formatted events are then joined into a single string, separated by new lines.
-
-        Args:
-            events (list): A list of event objects.
-
-        Returns:
-            str: A formatted string containing all events, each on a new line.
-        """
-        return "\n".join([EventView.format_event(event) for event in events])
+        """Formats a list of events for display in the CLI"""
+        return [EventView.format_events(event) for event in events]
 
     @staticmethod
     def display_event(event):
         """Formats a single event for display.
-
-    This method calls `format_event` to convert the event object into
-    a readable string format.
-
-    Args:
-        event: The event object to be formatted.
-
-    Returns:
-        str: Formatted event details.
-    """
+        This method calls `format_event` to convert the event object into
+        a readable string format.
+        """
         return EventView.format_event(event)
 
     @staticmethod
     def format_event(event):
         """Converts an event object into a human-readable string"""
-        return f"{event.id} - {event.name}, Lieu: {event.location}, Participants: {event.attendees}"
+        return (
+            f"📅 ID: {event.id} - {event.name}\n"
+            f"📍 Lieu: {event.location}\n"
+            f"👥 Participants: {event.attendees}\n"
+            f"🕒 Début: {event.start_date.strftime('%Y-%m-%d %H:%M')}\n"
+            f"🕕 Fin: {event.end_date.strftime('%Y-%m-%d %H:%M')}\n"
+            f"📝 Notes: {event.notes or 'Aucune'}\n"
+            f"🛠 Support: {event.support.first_name} {event.support.last_name}"
+            if event.support
+            else ""
+
+        )
 
     @staticmethod
     def contract_not_found():

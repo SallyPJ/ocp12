@@ -22,6 +22,3 @@ class PermissionService:
 
         user_permissions = {perm.name for perm in user.department.permissions}
         return permission_name in user_permissions
-
-
-

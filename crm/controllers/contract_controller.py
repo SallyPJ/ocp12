@@ -83,4 +83,3 @@ class ContractController(BaseController):
             raise ValueError(self.view.customer_no_sales_contact_message(customer_id))
 
         return customer.sales_contact
-

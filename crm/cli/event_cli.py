@@ -1,11 +1,16 @@
 import click
+import rich_click as rclick
+from rich.console import Console
+from rich.table import Table
 from database.transaction_manager import TransactionManager
 from controllers.event_controller import EventController
 from cli.contract_cli import list as contract_list
 from cli.user_cli import list as user_list
 
+console = Console()
 
-@click.group()
+
+@click.group(cls=rclick.RichGroup)
 def event():
     """Commandes pour gérer les événements."""
     pass
@@ -31,7 +36,29 @@ def list(all, no_support, location, start_date, end_date):
 
     with TransactionManager() as session:
         controller = EventController(session)
-        click.echo(controller.list_events(all=all, **filters))
+        events = controller.list_events(all=all, **filters)
+
+        table = Table(title="📅 Liste des événements", show_lines=True, header_style="bold cyan")
+        table.add_column("ID", style="cyan", justify="center")
+        table.add_column("Nom", style="bold")
+        table.add_column("Lieu", style="magenta")
+        table.add_column("Début", style="yellow")
+        table.add_column("Fin", style="yellow")
+        table.add_column("Participants", justify="center")
+        table.add_column("Support", style="green")
+
+        for event in events:
+            table.add_row(
+                str(event["ID"]),
+                event["Nom"],
+                event["Lieu"],
+                event["Début"],
+                event["Fin"],
+                str(event["Participants"]),
+                event["Support"],
+            )
+
+        console.print(table)
 
 
 @event.command()
@@ -69,11 +96,9 @@ def create(ctx):
                 location=location,
                 attendees=attendees,
                 support_contact=None,
-                notes=notes
-            ))
-
-
-
+                notes=notes,
+            )
+        )
 
 
 @event.command()
@@ -87,7 +112,16 @@ def update(event_id, name, location, support_contact, attendees, notes):
     """Modifier un événement."""
     with TransactionManager() as session:
         controller = EventController(session)
-        click.echo(controller.update_event(event_id, name=name, location=location, support_contact=support_contact, attendees=attendees, notes=notes))
+        click.echo(
+            controller.update_event(
+                event_id,
+                name=name,
+                location=location,
+                support_contact=support_contact,
+                attendees=attendees,
+                notes=notes,
+            )
+        )
 
 
 @event.command()
@@ -97,4 +131,3 @@ def delete(event_id):
     with TransactionManager() as session:
         controller = EventController(session)
         click.echo(controller.delete_event(event_id))
-

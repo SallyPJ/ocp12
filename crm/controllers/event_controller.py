@@ -25,7 +25,6 @@ class EventController(BaseController):
         return self.view.display_events(events)
 
     @require_auth
-
     @require_permission("read_all_events")
     def get_event(self, event_id):
         """Retrieves a specific event by ID"""
@@ -35,7 +34,6 @@ class EventController(BaseController):
         return self.view.display_event(event)
 
     @require_auth
-
     @require_permission("create_events")
     def create_event(self, name, contract_id, start_date, end_date, support_contact, location, attendees, notes):
         """Creates a new event if associated contract is signed"""
@@ -57,9 +55,7 @@ class EventController(BaseController):
             )
             return self.view.event_created(event.name)
 
-
     @require_auth
-
     @require_permission("edit_events")
     def update_event(self, event_id, **kwargs):
         """Updates an existing event"""
@@ -69,7 +65,7 @@ class EventController(BaseController):
 
         user = self.user_dao.get_by_id(self.user_id)
 
-        if event.support_contact != user.id and user.department_id not in (1, 4) :
+        if event.support_contact != user.id and user.department_id not in (1, 4):
             return self.view.access_for_modif_denied()
 
         valid_updates = {k: v for k, v in kwargs.items() if v is not None}
@@ -81,7 +77,6 @@ class EventController(BaseController):
         return self.view.event_updated(event.name)
 
     @require_auth
-
     @require_permission("delete_event")
     def delete_event(self, event_id):
         """Deletes an event"""
@@ -91,4 +86,3 @@ class EventController(BaseController):
 
         self.dao.delete(event)
         return self.view.event_deleted(event.name)
-

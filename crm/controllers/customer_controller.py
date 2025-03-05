@@ -53,7 +53,6 @@ class CustomerController(BaseController):
         if not customer:
             return self.view.customer_not_found()
 
-
         user = self.user_dao.get_by_id(self.user_id)
         if customer.sales_contact != self.user_id and user.department_id != 4:
             return self.view.access_denied()
@@ -72,5 +71,3 @@ class CustomerController(BaseController):
 
         updated_customer = self.dao.update(customer_id, **valid_updates)
         return self.view.customer_updated(updated_customer)
-
-

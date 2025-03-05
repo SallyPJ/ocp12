@@ -1,4 +1,5 @@
 from models.event import Event
+from sqlalchemy.orm import joinedload
 
 
 class EventDAO:
@@ -23,11 +24,11 @@ class EventDAO:
         """
         Retrieves events based on optional filters
         """
-        query = self.session.query(Event)
+        query = self.session.query(Event).options(joinedload(Event.support))
 
         if not all_events:
             if filters.get("no_support"):
-                query = query.filter(Event.support_contact == None)
+                query = query.filter(Event.support_contact.is_(None))
             if filters.get("location"):
                 query = query.filter(Event.location.ilike(f"%{filters['location']}%"))
             if filters.get("start_date"):
@@ -63,10 +64,6 @@ class EventDAO:
         for key, value in kwargs.items():
             setattr(event, key, value)
 
-
     def delete(self, event):
         """Deletes an event from the database"""
         self.session.delete(event)
-
-
-

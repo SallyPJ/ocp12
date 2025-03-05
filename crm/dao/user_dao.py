@@ -52,4 +52,3 @@ class UserDAO:
         user = self.get_by_id(user_id)
         if user:
             user.active = False
-

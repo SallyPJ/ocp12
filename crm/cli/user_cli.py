@@ -6,15 +6,15 @@ from database.transaction_manager import TransactionManager
 from controllers.user_controller import UserController
 from models.user import User
 
-rclick.rich_click.MAX_WIDTH = 100
-rclick.rich_click.USE_MARKDOWN = True
 
 console = Console()
+
 
 @click.group(cls=rclick.RichGroup)
 def user():
     """Commandes pour gérer les utilisateurs."""
     pass
+
 
 @user.command(cls=rclick.RichCommand)
 def list():
@@ -22,7 +22,9 @@ def list():
     with TransactionManager() as session:
         user_controller = UserController(session)
         users = user_controller.list_users()
-        table = Table(title="📋 Liste des Utilisateurs" if len(users) > 1 else "👤 Détails de l'utilisateur", show_lines=True)
+        table = Table(
+            title="📋 Liste des Utilisateurs" if len(users) > 1 else "👤 Détails de l'utilisateur", show_lines=True
+        )
         table.add_column("ID", style="cyan", justify="center")
         table.add_column("Prénom", style="bold")
         table.add_column("Nom", style="bold")
@@ -38,9 +40,10 @@ def list():
                 user.last_name,
                 user.email,
                 department_info,
-                "✅ Actif" if user.active else "❌ Inactif"
+                "✅ Actif" if user.active else "❌ Inactif",
             )
         console.print(table)
+
 
 @user.command()
 @click.argument("user_id", type=int)
@@ -48,8 +51,7 @@ def get(user_id):
     """Afficher les informations d'un utilisateur par ID."""
     with TransactionManager() as session:
         controller = UserController(session)
-        controller.get_user(user_id)
-
+        click.echo(controller.get_user(user_id))
 
 
 @user.command(cls=rclick.RichCommand)
@@ -66,6 +68,7 @@ def create():
         message = user_controller.create_user(first_name, last_name, email, password, department_id)
         click.echo(message)
 
+
 @user.command(cls=rclick.RichCommand)
 @click.argument("user_id", type=int)
 @click.option("--first-name", help="Nouveau prénom")
@@ -80,6 +83,7 @@ def update(user_id, **kwargs):
         user_controller = UserController(session)
         message = user_controller.update_user(user_id, **kwargs)
         click.echo(message)
+
 
 @user.command(cls=rclick.RichCommand)
 @click.argument("user_id", type=int)
@@ -108,6 +112,3 @@ def deactivate(user_id):
         controller = UserController(session)
         message = controller.deactivate_user(user_id)
         click.echo(message)
-
-
-

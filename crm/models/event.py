@@ -32,4 +32,4 @@ class Event(Base):
     notes = Column(Text)
 
     contract = relationship("Contract", back_populates="event")  # Relationship with Contract table 1-1
-    support = relationship("User")  # Relationship with User table (support contact)
+    support = relationship("User", backref="events_supported")  # Relationship with User table (support contact)

@@ -32,8 +32,11 @@ class CustomerView:
                 "Entreprise": customer.enterprise or "N/A",
                 "Date de création": customer.creation_date.strftime("%Y-%m-%d"),
                 "Dernier contact": customer.last_update.strftime("%Y-%m-%d") if customer.last_update else "N/A",
-                "Contact Sales": f"{customer.sales_rep.first_name} {customer.sales_rep.last_name}"
-                if customer.sales_rep else "Aucun commercial assigné",
+                "Contact Sales": (
+                    f"{customer.sales_rep.first_name} {customer.sales_rep.last_name}"
+                    if customer.sales_rep
+                    else "Aucun commercial assigné"
+                ),
             }
             for customer in customers
         ]
@@ -64,7 +67,8 @@ class CustomerView:
             f"📅 Date de création : {customer.creation_date.strftime('%Y-%m-%d')}\n"
             f"🔄 Dernier contact : {customer.last_update.strftime('%Y-%m-%d') if customer.last_update else 'N/A'}\n"
             f"🧑‍💼 Contact commercial : {customer.sales_rep.first_name} {customer.sales_rep.last_name} "
-            if customer.sales_rep else "Aucun commercial assigné"
+            if customer.sales_rep
+            else "Aucun commercial assigné"
         )
 
     @staticmethod
@@ -83,5 +87,5 @@ class CustomerView:
     @staticmethod
     def confirm_update(summary):
         from rich.prompt import Confirm
-        return Confirm.ask("Voulez-vous appliquer ces modifications ?", default=True)
 
+        return Confirm.ask("Voulez-vous appliquer ces modifications ?", default=True)

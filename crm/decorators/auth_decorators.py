@@ -2,9 +2,9 @@ import functools
 from services.token_service import TokenService
 from config import SECRET_KEY
 
+
 def require_auth(func):
     """Decorator that checks the validity of the token before executing a function."""
-
 
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -37,6 +37,7 @@ def require_auth(func):
         return None
 
     return wrapper
+
 
 def require_permission(permission_name):
     """Decorator that check permissions by department."""

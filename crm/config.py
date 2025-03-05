@@ -22,6 +22,6 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,  # Activate profiling
     integrations=[
         LoggingIntegration(level="INFO", event_level="ERROR"),  # Capture des logs
-        SqlalchemyIntegration()  # Capture SQL requests
-    ]
+        SqlalchemyIntegration(),  # Capture SQL requests
+    ],
 )

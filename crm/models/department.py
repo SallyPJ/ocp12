@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from models.base import Base
 from models.permission import Permission
 
+
 # Many-to-Many association table between Department and Permission
 department_permissions = Table(
     "department_permissions",

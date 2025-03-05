@@ -60,13 +60,17 @@ class ContractView:
             return {
                 "ID": c.id,
                 "Client": c.customer.name if c.customer else "N/A",
-                "Commercial": f"{c.sales_contact_user.first_name} {c.sales_contact_user.last_name}" if c.sales_contact_user else "N/A",
+                "Commercial": (
+                    f"{c.sales_contact_user.first_name} {c.sales_contact_user.last_name}"
+                    if c.sales_contact_user
+                    else "N/A"
+                ),
                 "Montant Total (€)": c.total_amount,
                 "Montant dû (€)": c.due_amount,
                 "Signé": "Oui" if c.is_signed else "Non",
                 "Payé": "Oui" if c.due_amount == 0 else "Non",
                 "Date Création": c.creation_date.strftime("%Y-%m-%d"),
-                "Événement associé": c.event.name if c.event else "Aucun événement"
+                "Événement associé": c.event.name if c.event else "Aucun événement",
             }
 
         # If `contracts` is a list, apply `format_contract` to each item
@@ -75,5 +79,3 @@ class ContractView:
 
         #  If `contracts` is a single object, return its formatted version
         return format_contract(contracts)
-
-

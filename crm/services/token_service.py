@@ -6,6 +6,7 @@ from config import SECRET_KEY, REFRESH_SECRET_KEY, ACCESS_TOKEN_EXPIRES_IN, REFR
 
 ISSUER = "EpicEvents"
 
+
 class TokenService:
     """Manages JWT token generation, validation, and secure storage."""
 
@@ -84,9 +85,9 @@ class TokenService:
 
         decoded = TokenService.decode_token(refresh_token, REFRESH_SECRET_KEY)
         if not decoded:
-            return None  # Refresh token invalide ou expiré
+            return None  # Invalid or expired Refresh token
 
-        # Génération d'un nouveau token d'accès
+        # Generate a new access token
         user_id = decoded["user_id"]
         new_access_token = TokenService.generate_token(
             type("User", (object,), {"id": user_id}),  # Simulation d'un user object

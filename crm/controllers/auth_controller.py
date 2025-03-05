@@ -1,6 +1,5 @@
 from services.auth_service import AuthService
-from decorators.auth_decorators import require_auth, require_permission
-
+from decorators.auth_decorators import require_auth
 
 
 class AuthController:

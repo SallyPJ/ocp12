@@ -1,42 +1,51 @@
 # Epic Events CRM
 
 ## Project Overview
-Epic Events CRM is a command-line application designed to manage customer relationships for event planning. The application follows the **MVC pattern with a DAO-only structure**. It is built using **Python and SQLAlchemy**, with department-based access control for different types of users.
+Epic Events CRM is a command-line application designed to manage customer relationships for event planning. 
 
 ## Features
-- **Event Management**: Create, update, and delete events.
-- **Client Management**: Register and modify client information.
-- **Contract Management**: Track contracts associated with events.
-- **User Roles & Permissions**: Different access levels for users (e.g., Sales, Support, Management).
-- **Audit Logging**: Logs interactions for security and debugging.
-- **Database Persistence**: Uses **MySQL** for data storage.
+- **Event Management** : Create, update, and delete events, assign support staff, and track participants.
+- **Client Management** : Register, update, and manage client details, including contacts and enterprise info.
+- **Contract Management** : Create, update, and track contracts linked to clients and events, including payment status.
+- **Employee Management** : Manage employees and assign roles (Sales, Support, Management).
+- **User Roles & Permissions** : Enforce access control with permissions for Sales, Support, and Management users.
+- **Audit Logging** : Log user activities, including contract signatures, employee modifications, and system errors.
+- **Database Persistence** : Uses **MySQL** with **SQLAlchemy ORM** for efficient data storage and retrieval.
+- **Secure Authentication** : Uses **JWT** for token-based authentication and **Argon2** for password hashing.
+- **CLI Interface** : Command-line based interactions with rich text formatting using **Click** and **Rich-Click**.
 
-## Software Used
+## Software
 - **Python**: Main programming language.
-- **SQLAlchemy**: ORM for database management.
-- **MySQL**: Database storage.
-- **Sentry**: Logging and error tracking.
-- **Typer**: CLI framework.
+- **SQLAlchemy**: ORM for database management and queries.
+- **MySQL**: Relational database for data storage.
+- **Sentry**: Logging, error tracking, and performance monitoring.
+- **Click**: CLI framework for user interactions.
+- **Rich & Rich-Click**: Enhanced CLI output formatting.
 - **Pipenv**: Virtual environment and dependency management.
+- **Keyring**: Secure storage for authentication tokens.
+- **Passlib (Argon2)**: Secure password hashing.
+- **JWT (PyJWT)**: Token-based authentication.
 
 ## Architecture
-This project follows the **DAO-only** approach:
-- **models/**: SQLAlchemy models.
-- **dao/**: Database access objects.
-- **services/**: Business logic and permission handling.
-- **controllers/**: Application logic.
-- **views/**: Command-line interface.
+This project follows a **DAO** approach with a MCV model:
 
-## Entity-Relationship Diagram (ERD)
-![img_1.png](img_1.png)
+- **models/**: SQLAlchemy models defining database structures.
+- **dao/**: Data Access Objects (DAO) for database interactions.
+- **services/**: Business logic, validation, and permission management.
+- **controllers/**: Handles application logic and user requests.
+- **views/**: Manages the command-line interface (CLI) output formatting.
+- **cli/**: CLI commands using `click` for user interaction.
+- **decorators/**: Authentication and permission control decorators.
+- **config/**: Configuration settings, including database and environment variables.
+- **seeders/**: Scripts to populate the database with initial data.
 
 ## Installation
 ```sh
 # Clone the repository
 git clone https://github.com/SallyPJ/ocp12.git
-cd epic_events_crm
+cd crm
 
-# Install Pipenv
+# Install Pipenv if necessary
 pip install pipenv
 
 # Create and activate a virtual environment
@@ -45,9 +54,9 @@ pipenv shell
 ```
 
 ## Environment Variables
-Create a `.env` file in the root directory with the following content:
+Create a `.env` file in the root directory (P12) with the following content:
 ```ini
-DATABASE_URL=mysql+pymysql://username:password@localhost/epic_events  # Update with your credentials
+DATABASE_URL=mysql+pymysql://username:password@localhost/epic_events_crm_dev  # Update with your credentials
 SENTRY_DSN=<your_sentry_dsn_here>
 ```
 
@@ -58,23 +67,15 @@ mysql -u root -p
 ```
 Then, in the MySQL shell:
 ```sql
-CREATE DATABASE epic_events;
-CREATE USER 'epic_user'@'localhost' IDENTIFIED BY 'securepassword';
-GRANT ALL PRIVILEGES ON epic_events.* TO 'epic_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
+CREATE DATABASE epic_events_crm_dev;
+
 ```
 
-### Initialize the Database
-Run the following command to create tables:
+### Initialize and seed the Database
+Run the following command to create and seed tables with permissions 
+and test employees, customers, contracts and events:
 ```sh
-python setup_database.py
-```
-
-### Seed the Database with Initial Data
-To populate the database with initial test data:
-```sh
-python seed_database.py
+python -m crm.seeders.seed_all
 ```
 
 ## Running the Application
@@ -85,32 +86,44 @@ python main.py
 ## User Roles
 - **Sales**: Can manage clients and contracts.
 - **Support**: Can access and update event details.
-- **Management**: Full access to all resources.
+- **Management**: Can manage employees, create and edit contracts, can edit events.
+- **Admin**: Full access 
 
-## Command List
-| Command                          | Description |
-|----------------------------------|-------------|
-| `python main.py create-client`  | Register a new client |
-| `python main.py update-client`  | Modify client details |
-| `python main.py create-event`   | Add a new event |
-| `python main.py update-event`   | Modify an event |
-| `python main.py create-contract`| Create a new contract |
-| `python main.py update-contract`| Modify contract details |
-| `python main.py list-events`    | Display all events |
-| `python main.py list-clients`   | Display all clients |
-| `python main.py list-contracts` | Display all contracts |
+## Test data and permissions constants location
 
-## Running Tests
-```sh
-pytest tests/
-```
+Permissions : crm/services/constants.py  
+Tests data : crm/seeders/seed_data
+
+##  Main Command List
+| Command                              | Description                           |
+|--------------------------------------|---------------------------------------|
+| `python main.py customer list`       | Show all customers                    |
+| `python main.py customer get <id>`   | Show details of a specific customer   |
+| `python main.py customer create`     | Register a new client                 |
+| `python main.py customer update <id>` | Modify client details                 |
+| `python main.py event list`          | Display all events (options)          |
+| `python main.py event get <id>`      | Show details of a specific event      |
+| `python main.py event create`        | Add a new event                       |
+| `python main.py event update <id>`   | Modify an event                       |
+| `python main.py contract list`       | Display all contracts (options)       |
+| `python main.py contract get <id>`   | Show details of a specific contract   |
+| `python main.py contract create`     | Create a new contract                 |
+| `python main.py contract update <id>` | Modify contract details               |
+| `python main.py user list`           | Show all employees                    |
+| `python main.py user get <id>`       | Show details of a specific employee   |
+| `python main.py user create`         | Register a new employee               |
+| `python main.py user update <id>`    | Modify an employee's details          |
+| `python main.py user deactivate <id>` | Deactivate an employee account        |
+| `python main.py auth login`          | Authenticate and store session tokens |
+| `python main.py auth logout`         | Logout and remove stored session      |
+
+
+## Entity-Relationship Diagram (ERD)
+![img_1.png](img_1.png)
+
 
 ## Logging & Debugging (Sentry)
 Errors and application logs are tracked using **Sentry**. Ensure your **SENTRY_DSN** is correctly configured in the `.env` file to receive logs in the Sentry dashboard.
 
-## License
-This project is licensed under the MIT License.
 
-## Contact
-For further inquiries, please contact **SallyPJ** at [GitHub](https://github.com/SallyPJ).
 

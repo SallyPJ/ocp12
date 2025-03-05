@@ -1,6 +1,6 @@
 import click
+import rich_click as rclick
 from rich.console import Console
-from rich.panel import Panel
 from rich.table import Table
 from database.transaction_manager import TransactionManager
 from controllers.contract_controller import ContractController
@@ -8,42 +8,37 @@ from controllers.contract_controller import ContractController
 console = Console()
 
 
-@click.group(invoke_without_command=True)
-@click.pass_context
-def contract(ctx):
-    """📜 [bold cyan]Commandes de gestion des contrats[/bold cyan]."""
-
-    if ctx.invoked_subcommand is None:
-        console.print(
-            Panel(
-                "[bold yellow]Bienvenue dans le menu de gestion des contrats ![/bold yellow]\n\n"
-                " Utilisez l'une des commandes suivantes :",
-                title="📜 Gestion des contrats",
-                style="cyan",
-                width=70,
-                padding=(1, 2),
-            )
-        )
-
-        table = Table(show_header=True, header_style="bold cyan")
-        table.add_column("Commande", style="bold magenta")
-        table.add_column("Description", style="white")
-
-        table.add_row("[bold]list[/bold]", "Afficher tous les contrats.")
-        table.add_row("[bold]get <id>[/bold]", "Afficher un contrat par ID.")
-        table.add_row("[bold]create[/bold]", "Créer un nouveau contrat.")
-        table.add_row("[bold]update <id>[/bold]", "Modifier un contrat existant.")
-
-        console.print(table)
-        console.print("\nℹ️ Tapez `[bold]main.py contract <commande>[/bold]` pour exécuter une commande.")
+@click.group(cls=rclick.RichGroup)
+def contract():
+    """📜 Commandes de gestion des contrats"""
 
 
 @contract.command()
-def list():
+@click.option("--customer-id", type=int, help="ID du client")
+@click.option("--is-signed", type=bool, help="Filtrer par statut signé/non signé")
+@click.option("--start-date", type=str, help="Date de début (format YYYY-MM-DD)")
+@click.option("--end-date", type=str, help="Date de fin (format YYYY-MM-DD)")
+@click.option("--sales-contact", type=int, help="ID du commercial responsable")
+@click.option("--is-paid", type=bool, help="Afficher les contrats payés (True) ou non payés (False)")
+def list(customer_id, is_signed, start_date, end_date, sales_contact, is_paid):
+    filters = {}
+    if customer_id:
+        filters["customer_id"] = customer_id
+    if is_signed is not None:
+        filters["is_signed"] = is_signed
+    if start_date:
+        filters["start_date"] = start_date
+    if end_date:
+        filters["end_date"] = end_date
+    if sales_contact:
+        filters["sales_contact"] = sales_contact
+    if is_paid is not None:
+        filters["is_paid"] = is_paid
+
     """📋 Afficher tous les contrats sous forme de tableau."""
     with TransactionManager() as session:
         controller = ContractController(session)
-        contracts = controller.list_contracts()
+        contracts = controller.list_contracts(**filters)
 
         if isinstance(contracts, str):  # Si c'est un message d'erreur
             console.print(contracts, style="bold red")
@@ -67,8 +62,8 @@ def list():
                 c["Commercial"],
                 f"{c['Montant Total (€)']} €",
                 f"{c['Montant dû (€)']} €",
-                f"✅" if c["Signé"] == "Oui" else "❌",
-                f"✅" if c["Payé"] == "Oui" else "❌",
+                "✅" if c["Signé"] == "Oui" else "❌",
+                "✅" if c["Payé"] == "Oui" else "❌",
                 c["Date Création"],
                 c["Événement associé"],
             )

@@ -1,6 +1,7 @@
 import click
+import rich_click as rclick
 from rich.console import Console
-from rich.prompt import Prompt, Confirm
+from rich.prompt import Prompt
 from rich.table import Table
 from database.transaction_manager import TransactionManager
 from controllers.customer_controller import CustomerController
@@ -8,9 +9,9 @@ from controllers.customer_controller import CustomerController
 console = Console()
 
 
-@click.group()
+@click.group(cls=rclick.RichGroup)
 def customer():
-    """Commandes pour gérer les clients."""
+    """👤 Commandes pour gérer les clients."""
     pass
 
 
@@ -40,7 +41,7 @@ def list():
                 customer["Entreprise"],
                 customer["Date de création"],
                 customer["Dernier contact"],
-                customer["Contact Sales"]
+                customer["Contact Sales"],
             )
 
         console.print(table)
@@ -75,8 +76,13 @@ def create():
 @click.option("--phone", type=str, help="Nouveau numéro de téléphone")
 @click.option("--enterprise", type=str, help="Nouvelle entreprise du client")
 @click.option("--last-update", type=click.DateTime(formats=["%Y-%m-%d"]), help="Date du dernier contact (YYYY-MM-DD)")
-def update(customer_id, name, email, phone, enterprise,last_update):
+def update(customer_id, name, email, phone, enterprise, last_update):
     """Modifier un client."""
     with TransactionManager() as session:
         controller = CustomerController(session)
-        console.print(controller.update_customer(customer_id, name=name, email=email, phone=phone, enterprise=enterprise,last_update=last_update), style="bold green")
+        console.print(
+            controller.update_customer(
+                customer_id, name=name, email=email, phone=phone, enterprise=enterprise, last_update=last_update
+            ),
+            style="bold green",
+        )

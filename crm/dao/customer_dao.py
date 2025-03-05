@@ -2,7 +2,6 @@ from models.customer import Customer
 from sqlalchemy.orm import joinedload
 
 
-
 class CustomerDAO:
     """Accès aux données clients (lecture seule)."""
 
@@ -20,12 +19,8 @@ class CustomerDAO:
     def create(self, name, email, phone, enterprise, sales_contact):
         """Creates a new customer"""
         new_customer = Customer(
-            name=name,
-            email=email,
-            phone=phone,
-            enterprise=enterprise,
-            sales_contact=sales_contact,
-            last_update=None)
+            name=name, email=email, phone=phone, enterprise=enterprise, sales_contact=sales_contact, last_update=None
+        )
         self.session.add(new_customer)
         return new_customer
 

@@ -5,7 +5,6 @@ from views.user_view import UserView
 import sentry_sdk
 
 
-
 class UserController(BaseController):
     """Manage user's actions without interaction with DB"""
 
@@ -31,7 +30,6 @@ class UserController(BaseController):
             return self.view.user_not_found()
 
         return self.view.format_user(user)
-
 
     @require_auth
     @require_permission("create_employees")
@@ -83,4 +81,3 @@ class UserController(BaseController):
 
         self.dao.deactivate_user(user_id)
         return self.view.user_deactivated(user)
-

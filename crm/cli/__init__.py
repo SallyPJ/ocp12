@@ -11,10 +11,14 @@ rclick.rich_click.USE_MARKDOWN = True
 rclick.rich_click.MAX_WIDTH = 100
 
 
-@click.group(cls=RichGroup, help="🚀 **CLI principale du CRM Epic Events** : Gérer les employés, clients, contrats et événements.")
+@click.group(
+    cls=RichGroup,
+    help="🚀 **CLI principale du CRM Epic Events** : Gérer les employés, clients, contrats et événements.",
+)
 def cli():
     """Main CLI interface."""
     pass
+
 
 cli.add_command(user)
 cli.add_command(contract)
