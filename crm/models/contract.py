@@ -30,6 +30,8 @@ class Contract(Base):
     customer = relationship("Customer", backref="contracts")
     sales_contact_user = relationship("User", backref="contracts")
 
+    event = relationship("Event", back_populates="contract", uselist=False)
+
     @property
     def is_paid(self):
         """Returns True if the contract is fully paid (due amount = 0), otherwise False."""

@@ -26,10 +26,12 @@ class ContractView:
         return f"✅ Contrat {contract.id} mis à jour avec succès."
 
     @staticmethod
-    def display_contracts(contracts):
-        """Formate une liste de contrats"""
-        return [
-            {
+    def format_contracts(contracts):
+        """Formate un ou plusieurs contrats en dictionnaire(s)."""
+
+        def format_contract(c):
+            """Formate un contrat unique en dictionnaire."""
+            return {
                 "ID": c.id,
                 "Client": c.customer.name if c.customer else "N/A",
                 "Commercial": f"{c.sales_contact_user.first_name} {c.sales_contact_user.last_name}" if c.sales_contact_user else "N/A",
@@ -38,22 +40,14 @@ class ContractView:
                 "Signé": "Oui" if c.is_signed else "Non",
                 "Payé": "Oui" if c.due_amount == 0 else "Non",
                 "Date Création": c.creation_date.strftime("%Y-%m-%d"),
+                "Événement associé": c.event.name if c.event else "Aucun événement"
             }
-            for c in contracts
-        ]
 
-    @staticmethod
-    def display_contract(contract):
-        """Formate un contrat unique"""
-        return {
-            "ID": contract.id,
-            "Client": contract.customer.name if contract.customer else "N/A",
-            "Commercial": f"{contract.sales_contact_user.first_name} {contract.sales_contact_user.last_name}" if contract.sales_contact_user else "N/A",
-            "Montant Total (€)": contract.total_amount,
-            "Montant dû (€)": contract.due_amount,
-            "Signé": "Oui" if contract.is_signed else "Non",
-            "Payé": "Oui" if contract.due_amount == 0 else "Non",
-            "Date Création": contract.creation_date.strftime("%Y-%m-%d"),
-        }
+        # ✅ Si `contracts` est une liste, appliquer `format_contract` sur chaque élément
+        if isinstance(contracts, list):
+            return [format_contract(c) for c in contracts]
+
+        # ✅ Si `contracts` est un seul objet, retourner son format unique
+        return format_contract(contracts)
 
 

@@ -215,8 +215,8 @@ events:
     notes: "Important conference"
 
   - name: "Conference C"
-    contract_id: 1
-    customer_id: 1
+    contract_id: 4
+    customer_id: 4
     start_date: "2025-04-01 09:00:00"
     end_date: "2025-04-01 17:00:00"
     support_contact: null  # No support contact

@@ -58,6 +58,7 @@ def list():
         table.add_column("Signé", justify="center")
         table.add_column("Payé", justify="center")
         table.add_column("Date Création", justify="center")
+        table.add_column("Événement", style="yellow", justify="center")
 
         for c in contracts:
             table.add_row(
@@ -69,6 +70,7 @@ def list():
                 f"✅" if c["Signé"] == "Oui" else "❌",
                 f"✅" if c["Payé"] == "Oui" else "❌",
                 c["Date Création"],
+                c["Événement associé"],
             )
 
         console.print(table)

@@ -21,7 +21,7 @@ class ContractController(BaseController):
         contracts = self.dao.get_filtered_contracts(**filters)
         if not contracts:
             return self.view.no_contracts_found()
-        return self.view.display_contracts(contracts)
+        return self.view.format_contracts(contracts)
 
     @require_permission("read_all_contracts")
     def get_contract(self, contract_id):
@@ -29,7 +29,7 @@ class ContractController(BaseController):
         contract = self.dao.get_by_id(contract_id)
         if not contract:
             return self.view.contract_not_found()
-        return self.view.display_contract(contract)
+        return self.view.format_contracts(contract)
 
     @require_permission("create_contracts")
     def create_contract(self, customer_id, total_amount, due_amount, is_signed):

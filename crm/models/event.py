@@ -22,7 +22,7 @@ class Event(Base):
         index=True,
     )
     name = Column(String(255), nullable=False)
-    contract_id = Column(Integer, ForeignKey("contract.id", ondelete="CASCADE"), nullable=False)
+    contract_id = Column(Integer, ForeignKey("contract.id", ondelete="CASCADE"), nullable=False, unique=True)
     customer_id = Column(Integer, ForeignKey("customer.id", ondelete="CASCADE"), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
@@ -31,5 +31,5 @@ class Event(Base):
     attendees = Column(Integer, nullable=False)
     notes = Column(Text)
 
-    contract = relationship("Contract")  # Relationship with Contract table
+    contract = relationship("Contract", back_populates="event")  # Relationship with Contract table 1-1
     support = relationship("User")  # Relationship with User table (support contact)

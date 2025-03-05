@@ -15,6 +15,10 @@ class EventDAO:
         """Retrieves an event by ID"""
         return self.session.query(Event).filter_by(id=event_id).first()
 
+    def get_event_by_contract_id(self, contract_id):
+        """Retrieves an event by contract"""
+        return self.session.query(Event).filter_by(contract_id=contract_id).first()
+
     def get_filtered_events(self, all_events=False, **filters):
         """
         Retrieves events based on optional filters
@@ -64,3 +68,5 @@ class EventDAO:
         """Deletes an event from the database"""
         self.session.delete(event)
         self.session.commit()
+
+

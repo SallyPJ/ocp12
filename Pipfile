@@ -17,6 +17,7 @@ pylint = "*"
 flake8 = "*"
 flake8-html = "*"
 rich-click = "*"
+alembic = "*"
 
 [dev-packages]
 
