@@ -41,7 +41,8 @@ class UserController(BaseController):
             return self.view.user_exists()
 
         user = self.dao.create(first_name, last_name, email, password, department_id, active)
-        sentry_sdk.capture_message(f"👤 Utilisateur créé : {user.email} (ID: {user.id})", level="info")
+        message = self.view.user_created(user)
+        sentry_sdk.capture_message(message, level="info")
 
         return self.view.user_created(user)
 
@@ -55,7 +56,10 @@ class UserController(BaseController):
 
         updates = {k: v for k, v in kwargs.items() if v is not None}
         self.dao.update(user, **updates)
-        sentry_sdk.capture_message(f"✏️ Utilisateur modifié : {user.email} (ID: {user.id})", level="info")
+
+        message = self.view.user_updated(user)
+        sentry_sdk.capture_message(message, level="info")
+
         return self.view.user_updated(user)
 
     @require_auth

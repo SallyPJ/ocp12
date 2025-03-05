@@ -55,18 +55,18 @@ class EventDAO:
             notes=notes,
         )
         self.session.add(new_event)
-        self.session.commit()
+
         return new_event
 
     def update(self, event, **kwargs):
         """Updates an existing event."""
         for key, value in kwargs.items():
             setattr(event, key, value)
-        self.session.commit()
+
 
     def delete(self, event):
         """Deletes an event from the database"""
         self.session.delete(event)
-        self.session.commit()
+
 
 

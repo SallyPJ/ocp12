@@ -4,7 +4,7 @@ from decorators.auth_decorators import require_auth, require_permission
 
 
 class AuthController:
-    """Gère l'authentification des utilisateurs."""
+    """Manage user authentication."""
 
     def __init__(self, session):
         self.auth_service = AuthService(session)

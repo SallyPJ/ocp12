@@ -1,5 +1,5 @@
 class ContractView:
-    """Handles contract display for CLI"""
+    """Handles contract display for CLI interactions."""
 
     @staticmethod
     def no_contracts_found():
@@ -26,11 +26,37 @@ class ContractView:
         return f"✅ Contrat {contract.id} mis à jour avec succès."
 
     @staticmethod
+    def contract_signed_message(contract):
+        return f"📜 Contrat signé : ID {contract.id} - Client {contract.customer.name}"
+
+    @staticmethod
+    def customer_not_found_message(customer_id):
+        return f"❌ Client ID {customer_id} introuvable."
+
+    @staticmethod
+    def customer_no_sales_contact_message(customer_id):
+        return f"❌ Le client ID {customer_id} n'a pas de commercial assigné."
+
+    @staticmethod
     def format_contracts(contracts):
-        """Formate un ou plusieurs contrats en dictionnaire(s)."""
+        """Formats one or multiple contracts into dictionaries for display.
+
+        Args:
+            contracts: A single contract object or a list of contracts.
+
+        Returns:
+            dict or list: Formatted contract details.
+        """
 
         def format_contract(c):
-            """Formate un contrat unique en dictionnaire."""
+            """Formats a single contract into a dictionary.
+
+            Args:
+                c: The contract object to be formatted.
+
+            Returns:
+                dict: Formatted contract details.
+            """
             return {
                 "ID": c.id,
                 "Client": c.customer.name if c.customer else "N/A",
@@ -43,11 +69,11 @@ class ContractView:
                 "Événement associé": c.event.name if c.event else "Aucun événement"
             }
 
-        # ✅ Si `contracts` est une liste, appliquer `format_contract` sur chaque élément
+        # If `contracts` is a list, apply `format_contract` to each item
         if isinstance(contracts, list):
             return [format_contract(c) for c in contracts]
 
-        # ✅ Si `contracts` est un seul objet, retourner son format unique
+        #  If `contracts` is a single object, return its formatted version
         return format_contract(contracts)
 
 

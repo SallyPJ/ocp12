@@ -23,7 +23,7 @@ class UserView:
 
     @staticmethod
     def user_created(user):
-        return f"✅ Utilisateur {user.email} créé avec succès."
+        return f"✅ Utilisateur {user.email} (ID: {user.id}) créé avec succès."
 
     @staticmethod
     def user_not_found():
@@ -31,7 +31,7 @@ class UserView:
 
     @staticmethod
     def user_updated(user):
-        return f"✅ Utilisateur {user.email} mis à jour avec succès."
+        return f"✅ Utilisateur {user.email} (ID: {user.id}) mis à jour avec succès."
 
     @staticmethod
     def user_deleted(user):

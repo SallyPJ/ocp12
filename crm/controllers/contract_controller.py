@@ -44,11 +44,11 @@ class ContractController(BaseController):
             return self.view.error_message(str(e))
 
         contract = self.dao.create_contract(customer_id, sales_contact, total_amount, due_amount, is_signed)
+
         if is_signed:
-            sentry_sdk.capture_message(
-                f"📜 Contrat signé : ID {contract.id} - Client {contract.customer.name} par User ID {self.user_id}",
-                level="info"
-            )
+            message = self.view.contract_signed_message(contract)
+            sentry_sdk.capture_message(message, level="info")
+
         return self.view.contract_created(contract)
 
     @require_auth
@@ -68,7 +68,7 @@ class ContractController(BaseController):
         updated_contract = self.dao.update_contract(contract_id, **kwargs)
         is_now_signed = updated_contract.is_signed
         if was_unsigned and is_now_signed:
-            message = f"📜 Le contrat {contract.id} a été signé."
+            message = self.view.contract_signed_message(contract)
             sentry_sdk.capture_message(message, level="info")
         return self.view.contract_updated(updated_contract)
 
@@ -77,10 +77,10 @@ class ContractController(BaseController):
         customer = self.customer_dao.get_by_id(customer_id)
 
         if not customer:
-            raise ValueError(f"❌ Client ID {customer_id} introuvable.")
+            raise ValueError(self.view.customer_not_found_message(customer_id))
 
         if not customer.sales_contact:
-            raise ValueError(f"❌ Le client ID {customer_id} n'a pas de commercial assigné.")
+            raise ValueError(self.view.customer_no_sales_contact_message(customer_id))
 
         return customer.sales_contact
 

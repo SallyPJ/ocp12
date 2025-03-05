@@ -9,15 +9,22 @@ db_session = scoped_session(SessionFactory)
 
 
 class TransactionManager:
-    """Gestionnaire de transaction contextuel.
-    Ouvre une session, effectue commit en l'absence d'erreur, sinon rollback,
-    puis nettoie la session."""
+    """Context manager for handling database transactions.
+    It opens a session, commits the transaction if no error occurs,
+    otherwise performs a rollback, and then cleans up the session."""
 
     def __enter__(self):
+        """Initialize and return a new database session."""
         self.session = db_session()
         return self.session
 
     def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Handles transaction closure:
+        - If an exception occurs, rollback the transaction.
+        - Otherwise, commit the changes.
+        - Finally, close the session to free resources.
+        """
         try:
             if exc_type:
                 self.session.rollback()

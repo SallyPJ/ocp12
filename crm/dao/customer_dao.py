@@ -1,4 +1,6 @@
 from models.customer import Customer
+from sqlalchemy.orm import joinedload
+
 
 
 class CustomerDAO:
@@ -9,7 +11,7 @@ class CustomerDAO:
 
     def get_all(self):
         """Retrieves all customers"""
-        return self.session.query(Customer).all()
+        return self.session.query(Customer).options(joinedload(Customer.sales_rep)).all()
 
     def get_by_id(self, customer_id):
         """Retrieves a customer by ID"""
@@ -17,9 +19,14 @@ class CustomerDAO:
 
     def create(self, name, email, phone, enterprise, sales_contact):
         """Creates a new customer"""
-        new_customer = Customer(name=name, email=email, phone=phone, enterprise=enterprise, sales_contact=sales_contact)
+        new_customer = Customer(
+            name=name,
+            email=email,
+            phone=phone,
+            enterprise=enterprise,
+            sales_contact=sales_contact,
+            last_update=None)
         self.session.add(new_customer)
-        self.session.commit()
         return new_customer
 
     def update(self, customer_id, **kwargs):

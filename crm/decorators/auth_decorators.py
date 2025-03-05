@@ -3,7 +3,8 @@ from services.token_service import TokenService
 from config import SECRET_KEY
 
 def require_auth(func):
-    """Décorateur qui vérifie la validité du token avant d'exécuter une fonction."""
+    """Decorator that checks the validity of the token before executing a function."""
+
 
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -15,13 +16,11 @@ def require_auth(func):
             print("❌ Aucun token trouvé. Veuillez vous connecter.")
             return None
 
-        # ✅ Décodage du token
         decoded = TokenService.decode_token(access_token, SECRET_KEY)
 
         if decoded:
-            self.user_id = decoded.get("user_id")  # ✅ Stocke user_id pour les permissions
-            print(f"✅ Utilisateur authentifié avec user_id = {self.user_id}")  # ✅ Debug
-            return func(self, *args, **kwargs)  # ✅ On ne passe pas `user_payload`
+            self.user_id = decoded.get("user_id")  #
+            return func(self, *args, **kwargs)
 
         # 🔄 Tentative de refresh si le token est expiré
         print("🔄 Tentative de refresh du token...")
@@ -31,8 +30,8 @@ def require_auth(func):
             print("🔄 Token rafraîchi automatiquement !")
             decoded = TokenService.decode_token(new_access_token, SECRET_KEY)
             if decoded:
-                self.user_id = decoded.get("user_id")  # ✅ Récupère user_id après refresh
-                return func(self, *args, **kwargs)  # ✅ On ne passe pas `user_payload`
+                self.user_id = decoded.get("user_id")
+                return func(self, *args, **kwargs)
 
         print("❌ Aucun token valide disponible après rafraîchissement.")
         return None
@@ -40,7 +39,7 @@ def require_auth(func):
     return wrapper
 
 def require_permission(permission_name):
-    """Décorateur pour sécuriser les contrôleurs et éviter la redondance."""
+    """Decorator that check permissions by department."""
 
     def decorator(func):
         @functools.wraps(func)
@@ -48,7 +47,7 @@ def require_permission(permission_name):
             if not hasattr(self, "user_id") or self.user_id is None:  # ✅ Vérification propre
                 print("🔴 Action refusée : Vous devez être connecté pour effectuer cette action.")
                 return
-            print(f"🔍 Vérification de la permission '{permission_name}' pour user_id {self.user_id}")  # ✅ Debug
+            # ✅ Debug
             if not self.permission_service.has_permission(self.user_id, permission_name):
                 return ["❌ Permission refusée."]
 

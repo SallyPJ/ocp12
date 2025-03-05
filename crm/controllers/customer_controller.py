@@ -37,11 +37,10 @@ class CustomerController(BaseController):
         """Creates a new customer"""
         user = self.user_dao.get_by_id(self.user_id)
 
-        # L'utilisateur est un admin (département 4) → pas de sales_contact
-        # Sinon, il devient le sales_contact du client créé
+        # user is admin (département 4) → no sales_contact
         sales_contact = None if user.department_id == 4 else user.id
 
-        # Passer `sales_contact` lors de la création du client
+        # transfer`sales_contact`
         new_customer = self.dao.create(name, email, phone, enterprise, sales_contact)
         return self.view.customer_created(new_customer)
 
@@ -54,25 +53,23 @@ class CustomerController(BaseController):
         if not customer:
             return self.view.customer_not_found()
 
-        # Vérifier si l'utilisateur est autorisé à modifier ce client
+
         user = self.user_dao.get_by_id(self.user_id)
         if customer.sales_contact != self.user_id and user.department_id != 4:
             return self.view.access_denied()
 
-        # Ne garder que les valeurs non nulles
+        # keep only non null values
         valid_updates = {k: v for k, v in kwargs.items() if v is not None}
 
         if not valid_updates:
             return self.view.no_changes_provided()
 
-        # Générer un résumé des modifications
+        # generate summary of modifications
         summary = self.view.update_summary(valid_updates)
 
-        # Demander confirmation via la vue
         if not self.view.confirm_update(summary):
             return self.view.update_cancelled()
 
-        # Appliquer la mise à jour
         updated_customer = self.dao.update(customer_id, **valid_updates)
         return self.view.customer_updated(updated_customer)
 

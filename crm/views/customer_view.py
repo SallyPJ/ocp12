@@ -23,12 +23,25 @@ class CustomerView:
 
     @staticmethod
     def display_customers(customers):
-        """Formate une liste d'objets clients en chaînes lisibles"""
-        return [f"{customer.id} - {customer.name} ({customer.email})" for customer in customers]
+        return [
+            {
+                "ID": customer.id,
+                "Nom": customer.name,
+                "Email": customer.email,
+                "Téléphone": customer.phone or "N/A",
+                "Entreprise": customer.enterprise or "N/A",
+                "Date de création": customer.creation_date.strftime("%Y-%m-%d"),
+                "Dernier contact": customer.last_update.strftime("%Y-%m-%d") if customer.last_update else "N/A",
+                "Contact Sales": f"{customer.sales_rep.first_name} {customer.sales_rep.last_name}"
+                if customer.sales_rep else "Aucun commercial assigné",
+            }
+            for customer in customers
+        ]
+
+        return formatted_customers
 
     @staticmethod
     def display_customer(customer):
-        """Formats and displays a single customer"""
         return CustomerView.format_customer(customer)
 
     @staticmethod
@@ -41,12 +54,21 @@ class CustomerView:
 
     @staticmethod
     def format_customer(customer):
-        """Formats a customer object into a readable string"""
-        return f"{customer.id} - {customer.name} ({customer.email})"
+        """Format a single customer with all relevant details."""
+        return (
+            f"📌 ID : {customer.id}\n"
+            f"👤 Nom : {customer.name}\n"
+            f"📧 Email : {customer.email}\n"
+            f"📞 Téléphone : {customer.phone or 'N/A'}\n"
+            f"🏢 Entreprise : {customer.enterprise or 'N/A'}\n"
+            f"📅 Date de création : {customer.creation_date.strftime('%Y-%m-%d')}\n"
+            f"🔄 Dernier contact : {customer.last_update.strftime('%Y-%m-%d') if customer.last_update else 'N/A'}\n"
+            f"🧑‍💼 Contact commercial : {customer.sales_rep.first_name} {customer.sales_rep.last_name} "
+            if customer.sales_rep else "Aucun commercial assigné"
+        )
 
     @staticmethod
     def update_summary(update_fields):
-        """Génère un résumé des mises à jour"""
         from rich.table import Table
         from rich.console import Console
 
@@ -60,7 +82,6 @@ class CustomerView:
 
     @staticmethod
     def confirm_update(summary):
-        """Demande confirmation avant de procéder à la mise à jour"""
         from rich.prompt import Confirm
         return Confirm.ask("Voulez-vous appliquer ces modifications ?", default=True)
 

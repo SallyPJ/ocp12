@@ -5,6 +5,7 @@ from sqlalchemy import (
     ForeignKey,
     TIMESTAMP,
     func,
+    DateTime
 )
 from sqlalchemy.orm import relationship
 from models.base import Base
@@ -24,6 +25,6 @@ class Customer(Base):
     phone = Column(String(20), nullable=False)  # Phone number (ex "+33612345678")
     enterprise = Column(String(255))
     creation_date = Column(TIMESTAMP, default=func.now(), nullable=False)
-    last_update = Column(TIMESTAMP, default=func.now(), onupdate=func.now(), nullable=False)
+    last_update =  Column(DateTime, nullable=True)
     sales_contact = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))  # Link with Sales
     sales_rep = relationship("User")  # Relationship with the User model (sales representative).

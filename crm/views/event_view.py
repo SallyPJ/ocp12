@@ -1,5 +1,5 @@
 class EventView:
-    """Gère l'affichage des événements pour le CLI"""
+    """Manage event display for CLI"""
 
     @staticmethod
     def no_events_found():
@@ -7,17 +7,38 @@ class EventView:
 
     @staticmethod
     def display_events(events):
-        """Formate une liste d'événements"""
+        """Formats a list of events for display.
+
+        This method takes a list of event objects and converts each event
+        into a human-readable string using the `format_event` method.
+        The formatted events are then joined into a single string, separated by new lines.
+
+        Args:
+            events (list): A list of event objects.
+
+        Returns:
+            str: A formatted string containing all events, each on a new line.
+        """
         return "\n".join([EventView.format_event(event) for event in events])
 
     @staticmethod
     def display_event(event):
-        """Formate un événement unique"""
+        """Formats a single event for display.
+
+    This method calls `format_event` to convert the event object into
+    a readable string format.
+
+    Args:
+        event: The event object to be formatted.
+
+    Returns:
+        str: Formatted event details.
+    """
         return EventView.format_event(event)
 
     @staticmethod
     def format_event(event):
-        """Transforme un objet événement en chaîne de caractères lisible"""
+        """Converts an event object into a human-readable string"""
         return f"{event.id} - {event.name}, Lieu: {event.location}, Participants: {event.attendees}"
 
     @staticmethod
@@ -43,9 +64,11 @@ class EventView:
     @staticmethod
     def access_denied():
         return "❌ Accès refusé : seul le commercial responsable ou un admin peut créer un événement."
+
     @staticmethod
     def access_for_modif_denied():
         return "❌ Accès refusé : seuls le support responsable, l'équipe management et l'admin peuvent modifier un évènement"
+
     @staticmethod
     def event_updated(event_name):
         return f"✅ Événement '{event_name}' mis à jour avec succès."

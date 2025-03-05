@@ -35,7 +35,6 @@ class UserDAO:
             active=active,
         )
         self.session.add(new_user)
-        self.session.commit()
         return new_user
 
     def update(self, user, **kwargs):
@@ -53,4 +52,4 @@ class UserDAO:
         user = self.get_by_id(user_id)
         if user:
             user.active = False
-            self.session.commit()
+

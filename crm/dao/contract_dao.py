@@ -42,7 +42,6 @@ class ContractDAO:
             is_signed=is_signed,
         )
         self.session.add(new_contract)
-        self.session.commit()
         return new_contract
 
     def update_contract(self, contract_id, **kwargs):
@@ -57,5 +56,4 @@ class ContractDAO:
 
                 setattr(contract, key, value)
 
-        self.session.commit()
         return contract

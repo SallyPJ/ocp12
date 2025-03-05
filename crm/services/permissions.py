@@ -1,15 +1,21 @@
-import functools
 from dao.user_dao import UserDAO
 
 
 class PermissionService:
-    """Gère l'accès aux permissions des utilisateurs."""
+    """Manages user access permissions."""
 
     def __init__(self, session):
         self.user_dao = UserDAO(session)
 
     def has_permission(self, user_id, permission_name):
-        """Vérifie si l'utilisateur possède une permission spécifique."""
+        """Checks if the user has a specific permission.
+
+        Retrieves the user from the database and verifies if the given permission
+        exists in the user's department permissions.
+
+        Returns:
+            bool: True if the user has the specified permission, False otherwise.
+        """
         user = self.user_dao.get_by_id(user_id)
         if not user:
             return False
