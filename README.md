@@ -43,25 +43,34 @@ This project follows a **DAO** approach with a MCV model:
 ```sh
 # Clone the repository
 git clone https://github.com/SallyPJ/ocp12.git
-cd crm
+cd ocp12
 
 # Install Pipenv if necessary
 pip install pipenv
 
-# Create and activate a virtual environment
+# Create a virtual environment
 pipenv install --dev
-pipenv shell
+
 ```
 
 ## Environment Variables
 Create a `.env` file in the root directory (P12) with the following content:
 ```ini
-DATABASE_URL=mysql+pymysql://username:password@localhost/epic_events_crm_dev  # Update with your credentials
+#Create secured secret keys for JWT authentication
+JWT_SECRET=<your_secret_key_here>
+JWT_REFRESH_SECRET=<your_refresh_secret_key_here>
+# Update with your credentials 
+DATABASE_URL=mysql+pymysql://username:password@localhost/epic_events_crm_dev
+# Update with you sentry DSN 
 SENTRY_DSN=<your_sentry_dsn_here>
 ```
 
 ## Database Setup
+
+### Install MySQL SGBD and create a root user (if necessary)
+
 ### Create the MySQL Database
+Connnect to MySQL (if necessary, add Mysql in your environment path)
 ```sh
 mysql -u root -p
 ```
@@ -70,15 +79,28 @@ Then, in the MySQL shell:
 CREATE DATABASE epic_events_crm_dev;
 
 ```
+Then 
+```sql
+EXIT;
+
+```
 
 ### Initialize and seed the Database
+In the ocp12 folder, activate the virtual environment :
+```sh
+pipenv shell
+```
 Run the following command to create and seed tables with permissions 
 and test employees, customers, contracts and events:
 ```sh
 python -m crm.seeders.seed_all
 ```
-
 ## Running the Application
+Go to the crm folder : 
+```sh
+cd crm
+```
+Launch the application :
 ```sh
 python main.py
 ```

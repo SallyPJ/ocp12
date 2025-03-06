@@ -17,7 +17,7 @@ REFRESH_TOKEN_EXPIRES_IN = 86400  # 24 hours
 
 # 📌 Intégration of Sentry with SQLAlchemy and Logging
 sentry_sdk.init(
-    dsn="https://59fa82cbee5bf596c98f22c1a22b456c@o4508876971769856.ingest.de.sentry.io/4508876976029776",
+    dsn="SENTRY_DSN",
     traces_sample_rate=1.0,  # Activate performance monitoring
     profiles_sample_rate=1.0,  # Activate profiling
     integrations=[
