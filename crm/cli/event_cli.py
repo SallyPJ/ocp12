@@ -18,10 +18,10 @@ def event():
 
 @event.command()
 @click.option("--all", is_flag=True, help="Afficher tous les événements sans appliquer de filtre.")
-@click.option("--no_support", is_flag=True, help="Filtrer les événements sans support.")
+@click.option("--no-support","no_support", is_flag=True, help="Filtrer les événements sans contact support.")
 @click.option("--location", type=str, help="Filtrer les événements par lieu.")
-@click.option("--start_date", type=str, help="Filtrer les événements à partir de cette date (YYYY-MM-DD).")
-@click.option("--end_date", type=str, help="Filtrer les événements jusqu'à cette date (YYYY-MM-DD).")
+@click.option("--start-date","start_date", type=str, help="Filtrer les événements à partir de cette date (YYYY-MM-DD).")
+@click.option("--end_date","end_date", type=str, help="Filtrer les événements jusqu'à cette date (YYYY-MM-DD).")
 def list(all, no_support, location, start_date, end_date):
     """Afficher les événements selon les filtres spécifiés ou tous les événements si --all est activé."""
     filters = {}

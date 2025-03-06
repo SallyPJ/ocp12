@@ -52,9 +52,14 @@ pip install pipenv
 pipenv install --dev
 
 ```
+## Sentry Configuration
+Sentry helps monitor and diagnose errors in your application.
 
+1. Create an account on [Sentry](https://sentry.io/).
+2. Create a new project and select Python as the platform.
+3. Copy the DSN provided by Sentry.
 ## Environment Variables
-Create a `.env` file in the root directory (P12) with the following content:
+Create a `.env` file in the root directory (ocp12) with the following content:
 ```ini
 #Create secured secret keys for JWT authentication
 JWT_SECRET=<your_secret_key_here>
@@ -77,12 +82,10 @@ mysql -u root -p
 Then, in the MySQL shell:
 ```sql
 CREATE DATABASE epic_events_crm_dev;
-
 ```
 Then 
 ```sql
 EXIT;
-
 ```
 
 ### Initialize and seed the Database

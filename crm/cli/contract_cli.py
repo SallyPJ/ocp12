@@ -15,7 +15,7 @@ def contract():
 
 @contract.command()
 @click.option("--customer-id", type=int, help="ID du client")
-@click.option("--is-signed", type=bool, help="Filtrer par statut signé/non signé")
+@click.option("--is-signed", type=bool, help="Afficher les contrats signés (True) ou non signé (False)")
 @click.option("--start-date", type=str, help="Date de début (format YYYY-MM-DD)")
 @click.option("--end-date", type=str, help="Date de fin (format YYYY-MM-DD)")
 @click.option("--sales-contact", type=int, help="ID du commercial responsable")

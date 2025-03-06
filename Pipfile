@@ -23,6 +23,7 @@ argon2-cffi = "*"
 passlib = "*"
 pymysql = "*"
 pyjwt = "*"
+"keyrings.alt" = "*"
 
 [dev-packages]
 
