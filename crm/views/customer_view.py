@@ -41,8 +41,6 @@ class CustomerView:
             for customer in customers
         ]
 
-        return formatted_customers
-
     @staticmethod
     def display_customer(customer):
         return CustomerView.format_customer(customer)

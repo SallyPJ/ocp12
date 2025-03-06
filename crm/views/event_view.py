@@ -73,7 +73,8 @@ class EventView:
 
     @staticmethod
     def access_for_modif_denied():
-        return "❌ Accès refusé : seuls le support responsable, l'équipe management et l'admin peuvent modifier un évènement"
+        return ("❌ Accès refusé : seuls le support responsable, "
+                "l'équipe management et l'admin peuvent modifier un évènement")
 
     @staticmethod
     def event_updated(event_name):

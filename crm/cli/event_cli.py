@@ -4,8 +4,7 @@ from rich.console import Console
 from rich.table import Table
 from database.transaction_manager import TransactionManager
 from controllers.event_controller import EventController
-from cli.contract_cli import list as contract_list
-from cli.user_cli import list as user_list
+from cli.contract_cli import list as contract_list # noqa
 
 console = Console()
 
@@ -16,13 +15,14 @@ def event():
     pass
 
 
-@event.command()
+@event.command(name="list")
 @click.option("--all", is_flag=True, help="Afficher tous les événements sans appliquer de filtre.")
-@click.option("--no-support","no_support", is_flag=True, help="Filtrer les événements sans contact support.")
+@click.option("--no-support", "no_support", is_flag=True,
+              help="Filtrer les événements sans contact support.")
 @click.option("--location", type=str, help="Filtrer les événements par lieu.")
-@click.option("--start-date","start_date", type=str, help="Filtrer les événements à partir de cette date (YYYY-MM-DD).")
-@click.option("--end_date","end_date", type=str, help="Filtrer les événements jusqu'à cette date (YYYY-MM-DD).")
-def list(all, no_support, location, start_date, end_date):
+@click.option("--start-date", "start_date", type=str, help="Filtrer les événements à partir de cette date (YYYY-MM-DD).")
+@click.option("--end-date", "end_date", type=str, help="Filtrer les événements jusqu'à cette date (YYYY-MM-DD).")
+def list_filter_events(all, no_support, location, start_date, end_date):
     """Afficher les événements selon les filtres spécifiés ou tous les événements si --all est activé."""
     filters = {}
     if no_support:
