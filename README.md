@@ -119,7 +119,7 @@ Tests data : crm/seeders/seed_data
 
 
 ## Entity-Relationship Diagram (ERD)
-![img_1.png](img_1.png)
+![img_1.png](ER_Diagram.png)
 
 
 ## Logging & Debugging (Sentry)
