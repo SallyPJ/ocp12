@@ -114,33 +114,71 @@ python main.py
 - **Management**: Can manage employees, create and edit contracts, can edit events.
 - **Admin**: Full access 
 
-## Test data and permissions constants location
+## Test data and permissions constants 
 
-Permissions : crm/services/constants.py  
-Tests data : crm/seeders/seed_data
+- **Permissions** :  
+ Location : crm/services/constants.py  
+ Details : 
+
+| Permission         | Departments                              | Limitations |
+|--------------------|-----------------------------------------|-------------|
+| read_all_employees | Management, Admin                      | No limitation |
+| create_employees   | Management, Admin                      | No limitation |
+| edit_employees     | Management, Admin                      | No limitation |
+| delete_employees   | Management, Admin                      | No limitation |
+| read_all_clients   | Management, Sales, Support, Admin      | No limitation |
+| create_clients     | Sales, Admin                           | The sales employee who created the contract will automatically be associated with it. |
+| edit_clients       | Sales, Admin                           | Sales employees can only modify clients they are responsible for. |
+| delete_clients     | Admin                                  | No limitation |
+| read_all_contracts | Management, Sales, Support, Admin     | No limitation |
+| create_contracts   | Management, Admin                      | No limitation |
+| edit_contracts     | Management, Sales, Admin              | Sales employees can only modify contracts they are responsible for. |
+| delete_contracts   | Admin                                  | No limitation |
+| read_all_events    | Management, Sales, Support, Admin     | No limitation |
+| create_events      | Sales, Admin                           | An event can only be created if it is associated with a signed contract that has no existing event. |
+| edit_events        | Management, Support, Admin            | Support employees can only modify events where they are assigned as the support contact. |
+| delete_events      | Admin                                  | The sales employee who created the contract will automatically be associated with it. |
+
+- **Tests data** : 
+ Location : crm/seeders/seed_data  
+ Exemple : 
+```sh
+users:
+  - first_name: "Admin"
+    last_name: "User"
+    email: "admin@example.com"
+    department_id: 4
+    password: "adminpassword"
+
+  - first_name: "Alice"
+    last_name: "Smith"
+    email: "alice.sales@example.com"
+    department_id: 2
+    password: "salespassword"
+ ```
 
 ##  Main Command List
-| Command                              | Description                           |
-|--------------------------------------|---------------------------------------|
-| `python main.py customer list`       | Show all customers                    |
-| `python main.py customer get <id>`   | Show details of a specific customer   |
-| `python main.py customer create`     | Register a new client                 |
-| `python main.py customer update <id>` | Modify client details                 |
-| `python main.py event list`          | Display all events (options)          |
-| `python main.py event get <id>`      | Show details of a specific event      |
-| `python main.py event create`        | Add a new event                       |
-| `python main.py event update <id>`   | Modify an event                       |
-| `python main.py contract list`       | Display all contracts (options)       |
-| `python main.py contract get <id>`   | Show details of a specific contract   |
-| `python main.py contract create`     | Create a new contract                 |
-| `python main.py contract update <id>` | Modify contract details               |
-| `python main.py user list`           | Show all employees                    |
-| `python main.py user get <id>`       | Show details of a specific employee   |
-| `python main.py user create`         | Register a new employee               |
-| `python main.py user update <id>`    | Modify an employee's details          |
-| `python main.py user deactivate <id>` | Deactivate an employee account        |
+| Command                              | Description                          |
+|--------------------------------------|--------------------------------------|
+| `python main.py customer list`       | Show all customers                   |
+| `python main.py customer get <id>`   | Show details of a specific customer  |
+| `python main.py customer create`     | Register a new client                |
+| `python main.py customer update <id>` | Modify client details (options)      |
+| `python main.py event list`          | Display all events (options)         |
+| `python main.py event get <id>`      | Show details of a specific event     |
+| `python main.py event create`        | Add a new event                      |
+| `python main.py event update <id>`   | Modify an event                      |
+| `python main.py contract list`       | Display all contracts (options)      |
+| `python main.py contract get <id>`   | Show details of a specific contract  |
+| `python main.py contract create`     | Create a new contract                |
+| `python main.py contract update <id>` | Modify contract details              |
+| `python main.py user list`           | Show all employees                   |
+| `python main.py user get <id>`       | Show details of a specific employee  |
+| `python main.py user create`         | Register a new employee              |
+| `python main.py user update <id>`    | Modify an employee's details         |
+| `python main.py user deactivate <id>` | Deactivate an employee account       |
 | `python main.py auth login`          | Authenticate and store session tokens |
-| `python main.py auth logout`         | Logout and remove stored session      |
+| `python main.py auth logout`         | Logout and remove stored session     |
 
 
 ## Entity-Relationship Diagram (ERD)
