@@ -59,7 +59,7 @@ class ContractView:
             """
             return {
                 "ID": c.id,
-                "Client": c.customer.name if c.customer else "N/A",
+                "Client": f"{c.customer.first_name} {c.customer.last_name}" if c.customer else "N/A",
                 "Commercial": (
                     f"{c.sales_contact_user.first_name} {c.sales_contact_user.last_name}"
                     if c.sales_contact_user

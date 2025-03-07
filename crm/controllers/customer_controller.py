@@ -33,7 +33,7 @@ class CustomerController(BaseController):
 
     @require_auth
     @require_permission("create_clients")
-    def create_customer(self, name, email, phone, enterprise):
+    def create_customer(self, first_name, last_name, email, phone, enterprise):
         """Creates a new customer"""
         user = self.user_dao.get_by_id(self.user_id)
 
@@ -41,7 +41,7 @@ class CustomerController(BaseController):
         sales_contact = None if user.department_id == 4 else user.id
 
         # transfer`sales_contact`
-        new_customer = self.dao.create(name, email, phone, enterprise, sales_contact)
+        new_customer = self.dao.create(first_name, last_name, email, phone, enterprise, sales_contact)
         return self.view.customer_created(new_customer)
 
     @require_auth

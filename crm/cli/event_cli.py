@@ -38,6 +38,8 @@ def list_filter_events(all, no_support, location, start_date, end_date):
         controller = EventController(session)
         events = controller.list_events(all=all, **filters)
 
+        if not events or isinstance(events, str):  # ✅ Vérifie si `events` est vide ou une erreur
+            return
         table = Table(title="📅 Liste des événements", show_lines=True, header_style="bold cyan")
         table.add_column("ID", style="cyan", justify="center")
         table.add_column("Nom", style="bold")
@@ -122,12 +124,3 @@ def update(event_id, name, location, support_contact, attendees, notes):
                 notes=notes,
             )
         )
-
-
-@event.command()
-@click.argument("event_id", type=int)
-def delete(event_id):
-    """Supprimer un événement."""
-    with TransactionManager() as session:
-        controller = EventController(session)
-        click.echo(controller.delete_event(event_id))

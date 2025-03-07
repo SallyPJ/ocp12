@@ -22,6 +22,8 @@ def list():
     with TransactionManager() as session:
         user_controller = UserController(session)
         users = user_controller.list_users()
+        if not users or isinstance(users, str):  # ✅ Vérifie si `events` est vide ou une erreur
+            return
         table = Table(
             title="📋 Liste des Utilisateurs" if len(users) > 1 else "👤 Détails de l'utilisateur", show_lines=True
         )

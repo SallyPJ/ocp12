@@ -26,7 +26,8 @@ class CustomerView:
         return [
             {
                 "ID": customer.id,
-                "Nom": customer.name,
+                "Prénom": customer.first_name,
+                "Nom": customer.last_name,
                 "Email": customer.email,
                 "Téléphone": customer.phone or "N/A",
                 "Entreprise": customer.enterprise or "N/A",
@@ -47,18 +48,19 @@ class CustomerView:
 
     @staticmethod
     def customer_created(customer):
-        return f"✅ Client {customer.name} ({customer.email}) ajouté avec succès."
+        return f"✅ Client {customer.first_name} {customer.last_name} ({customer.email}) ajouté avec succès."
 
     @staticmethod
     def customer_updated(customer):
-        return f"✅ Client {customer.name} mis à jour avec succès."
+        return f"✅ Client {customer.first_name} {customer.last_name} mis à jour avec succès."
 
     @staticmethod
     def format_customer(customer):
         """Format a single customer with all relevant details."""
         return (
             f"📌 ID : {customer.id}\n"
-            f"👤 Nom : {customer.name}\n"
+            f"👤 Prénom : {customer.fist_name}\n"
+            f"👤 Nom : {customer.last_name}\n"
             f"📧 Email : {customer.email}\n"
             f"📞 Téléphone : {customer.phone or 'N/A'}\n"
             f"🏢 Entreprise : {customer.enterprise or 'N/A'}\n"

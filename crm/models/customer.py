@@ -12,7 +12,8 @@ class Customer(Base):
         autoincrement=True,
         index=True,
     )
-    name = Column(String(255), nullable=False)
+    first_name = Column(String(255), nullable=False)
+    last_name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False)
     phone = Column(String(20), nullable=False)  # Phone number (ex "+33612345678")
     enterprise = Column(String(255))

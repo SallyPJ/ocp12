@@ -22,6 +22,8 @@ def list():
         controller = CustomerController(session)
         customers = controller.list_customers()
 
+        if not customers or isinstance(customers, str):  # ✅ Vérifie si `events` est vide ou une erreur
+            return
         table = Table(title="📋 Liste des Clients")
         table.add_column("ID", style="cyan", justify="center")
         table.add_column("Nom", style="bold")
@@ -59,14 +61,15 @@ def get(customer_id):
 @customer.command()
 def create():
     """Créer un nouveau client."""
-    name = Prompt.ask("Nom du client")
+    first_name = Prompt.ask("Prénom du client")
+    last_name = Prompt.ask("Nom du client")
     email = Prompt.ask("Email du client")
     phone = Prompt.ask("Numéro de téléphone")
     enterprise = Prompt.ask("Entreprise")
 
     with TransactionManager() as session:
         controller = CustomerController(session)
-        console.print(controller.create_customer(name, email, phone, enterprise), style="bold green")
+        console.print(controller.create_customer(first_name, last_name, email, phone, enterprise), style="bold green")
 
 
 @customer.command()

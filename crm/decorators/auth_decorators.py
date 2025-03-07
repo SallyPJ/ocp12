@@ -8,6 +8,8 @@ def require_auth(func):
 
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
+        print(f"🔍 Vérification de l'authentification pour {func.__name__}...")
+
         session_data = TokenService.read_session()
         access_token = session_data.get("access_token")
         refresh_token = session_data.get("refresh_token")

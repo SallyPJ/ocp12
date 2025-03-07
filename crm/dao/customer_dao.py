@@ -16,10 +16,11 @@ class CustomerDAO:
         """Retrieves a customer by ID"""
         return self.session.query(Customer).filter_by(id=customer_id).first()
 
-    def create(self, name, email, phone, enterprise, sales_contact):
+    def create(self, first_name, last_name, email, phone, enterprise, sales_contact):
         """Creates a new customer"""
         new_customer = Customer(
-            name=name, email=email, phone=phone, enterprise=enterprise, sales_contact=sales_contact, last_update=None
+            first_name=first_name,last_name=last_name, email=email, phone=phone,
+            enterprise=enterprise, sales_contact=sales_contact, last_update=None
         )
         self.session.add(new_customer)
         return new_customer

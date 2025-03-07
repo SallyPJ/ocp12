@@ -44,7 +44,8 @@ def seed_dynamic_data(session: Session):
     print("⚙️ Insertion des clients...")
     for customer_data in data["customers"]:
         customer = Customer(
-            name=customer_data["name"],
+            first_name=customer_data["first_name"],
+            last_name=customer_data["last_name"],
             email=customer_data["email"],
             phone=customer_data["phone"],
             enterprise=customer_data.get("enterprise", ""),

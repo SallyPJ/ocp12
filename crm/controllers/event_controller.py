@@ -30,7 +30,7 @@ class EventController(BaseController):
         """Retrieves a specific event by ID"""
         event = self.dao.get_by_id(event_id)
         if not event:
-            return self.view.no_event_found()
+            return self.view.no_events_found()
         return self.view.display_event(event)
 
     @require_auth

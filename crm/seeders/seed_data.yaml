@@ -60,65 +60,76 @@ users:
     password: "managementpassword"
 
 customers:
-  - name: "Client A"
+  - first_name: "Client"
+    last_name: "A"
     email: "clientA@example.com"
     phone: "+33612345678"
     enterprise: "Entreprise A"
-    sales_contact: 2  # Refers to the 'sales' user (ID = 2)
+    sales_contact: 2
 
-  - name: "Client B"
+  - first_name: "Client"
+    last_name: "B"
     email: "clientB@example.com"
     phone: "+33687654321"
     enterprise: "Entreprise B"
-    sales_contact: 3  # Refers to the 'sales' user (ID = 3)
+    sales_contact: 3
 
-  - name: "Client C"
+  - first_name: "Client"
+    last_name: "C"
     email: "clientC@example.com"
     phone: "+33612345678"
     enterprise: "Entreprise C"
-    sales_contact: 4  # Refers to the 'sales' user (ID = 2)
+    sales_contact: 4
 
-  - name: "Client D"
+  - first_name: "Client"
+    last_name: "D"
     email: "clientD@example.com"
     phone: "+33687654321"
     enterprise: "Entreprise D"
     sales_contact: 4
 
-  - name: "Client E"
+  - first_name: "Client"
+    last_name: "E"
     email: "clientE@example.com"
     phone: "+33612345678"
     enterprise: "Entreprise E"
-    sales_contact: 2  # Refers to the 'sales' user (ID = 2)
+    sales_contact: 2
 
-  - name: "Client F"
+  - first_name: "Client"
+    last_name: "F"
     email: "clientF@example.com"
     phone: "+33687654321"
     enterprise: "Entreprise F"
-    sales_contact: 3  # Refers to the 'sales' user (ID = 3)
+    sales_contact: 3
 
-  - name: "Client G"
+  - first_name: "Client"
+    last_name: "G"
     email: "clientG@example.com"
     phone: "+33612345678"
     enterprise: "Entreprise G"
-    sales_contact: 4  # Refers to the 'sales' user (ID = 2)
+    sales_contact: 4
 
-  - name: "Client H"
+  - first_name: "Client"
+    last_name: "H"
     email: "clientH@example.com"
     phone: "+33687654321"
     enterprise: "Entreprise H"
     sales_contact: 4
 
-  - name: "Client I"
+  - first_name: "Client"
+    last_name: "I"
     email: "clientI@example.com"
     phone: "+33687654321"
     enterprise: "Entreprise I"
-    sales_contact: 3  # Refers to the 'sales' user (ID = 3)
+    sales_contact: 3
 
-  - name: "Client J"
+  - first_name: "Client"
+    last_name: "J"
     email: "clientJ@example.com"
     phone: "+33612345678"
     enterprise: "Entreprise J"
     sales_contact: 4
+
 
 contracts:
   - customer_id: 1  # Refers to Client A

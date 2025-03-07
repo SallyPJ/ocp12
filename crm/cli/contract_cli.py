@@ -40,7 +40,7 @@ def list(customer_id, is_signed, start_date, end_date, sales_contact, is_paid):
         controller = ContractController(session)
         contracts = controller.list_contracts(**filters)
 
-        if isinstance(contracts, str):  # Si c'est un message d'erreur
+        if isinstance(contracts, str):  # if error message
             console.print(contracts, style="bold red")
             return
 
@@ -55,6 +55,8 @@ def list(customer_id, is_signed, start_date, end_date, sales_contact, is_paid):
         table.add_column("Date Création", justify="center")
         table.add_column("Événement", style="yellow", justify="center")
 
+        if not contracts or isinstance(contract, str):
+            return
         for c in contracts:
             table.add_row(
                 str(c["ID"]),
@@ -79,9 +81,10 @@ def get(contract_id):
         controller = ContractController(session)
         contract = controller.get_contract(contract_id)
 
-        if isinstance(contract, str):  # Si c'est un message d'erreur
+        if not contract or isinstance(contract, str):
             console.print(contract, style="bold red")
             return
+
 
         table = Table(title="📜 Détails du Contrat", header_style="bold cyan")
         for key, value in contract.items():
@@ -118,7 +121,7 @@ def update(contract_id, sales_contact, total_amount, due_amount, is_signed):
         controller = ContractController(session)
         contract = controller.get_contract(contract_id)
 
-        if isinstance(contract, str):  # Cas où le contrat n'est pas trouvé
+        if not contract or isinstance(contract, str):  # Cas où le contrat n'est pas trouvé
             console.print(contract, style="bold red")
             return
 
